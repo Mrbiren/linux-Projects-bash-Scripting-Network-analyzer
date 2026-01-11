@@ -1,0 +1,47 @@
+#!/bin/bash
+
+LOG_FILE="$HOME/network_drop_log.txt"
+CHECK_INTERVAL=3
+TARGETS=("8.8.8.8" "1.1.1.1" "google.com")
+
+NETWORK_STATUS="UNKNOWN"
+DOWN_TIME_START=0
+OUTAGE_COUNT=0
+
+check_network() {
+  for T in "${TARGETS[@]}"; do
+    ping -c 1 -W 1 "$T" > /dev/null 2>&1 && return 0
+  done
+  return 1
+}
+
+echo "----------------------------------------" >> "$LOG_FILE"
+echo "Network Monitor Started: $(date)" >> "$LOG_FILE"
+echo "----------------------------------------" >> "$LOG_FILE"
+
+while true
+do
+  if check_network; then
+    if [ "$NETWORK_STATUS" != "UP" ]; then
+      RESTORE_TIME=$(date +%s)
+      DOWNTIME=$((RESTORE_TIME - DOWN_TIME_START))
+
+      echo "$(date) - Network RESTORED" | tee -a "$LOG_FILE"
+      echo "Downtime Duration: $DOWNTIME seconds" | tee -a "$LOG_FILE"
+      echo "Total Outages Today: $OUTAGE_COUNT" | tee -a "$LOG_FILE"
+      echo "----------------------------------------" >> "$LOG_FILE"
+
+      NETWORK_STATUS="UP"
+    fi
+  else
+    if [ "$NETWORK_STATUS" != "DOWN" ]; then
+      DOWN_TIME_START=$(date +%s)
+      OUTAGE_COUNT=$((OUTAGE_COUNT + 1))
+
+      echo "$(date) - Network DOWN" | tee -a "$LOG_FILE"
+      NETWORK_STATUS="DOWN"
+    fi
+  fi
+
+  sleep "$CHECK_INTERVAL"
+done
