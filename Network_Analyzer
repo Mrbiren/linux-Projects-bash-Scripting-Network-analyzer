@@ -1,7 +1,155 @@
-Alias /phpmyadmin /usr/share/phpmyadmin
+4)
+package com.testing;
 
-<Directory /usr/share/phpmyadmin>
-    Options Indexes FollowSymLinks
-    AllowOverride All
-    Require all granted
-</Directory>
+import org.openqa.selenium.*;
+
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.*;
+import org.junit.Assert;
+
+public class test {
+
+	public static void main(String[] args) {
+		// --- 1. Setup WebDriver ---
+        System.setProperty("webdriver.chrome.driver","D:\\Download\\chrome-win64\\chrome-win64\\chrome.exe");
+
+        WebDriver driver = new ChromeDriver();
+        driver.manage().window().maximize();
+
+        // --- 2. Navigate to Practice Site ---
+        driver.get("https://practice.gabrains.com/");
+
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+
+        // --- 3. Wait for Login screen elements ---
+        WebElement emailField = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.name("email")));
+
+        WebElement passwordField = driver.findElement(By.name("password"));
+
+        // --- 4. Enter Credentials ---
+        emailField.sendKeys("qa_testers@gabrains.com");
+        passwordField.sendKeys("Password123");
+
+        // --- 5. Click Login ---
+        WebElement loginBtn = driver.findElement(
+                By.xpath("//button[contains(text(),'Login')]"));
+        loginBtn.click();
+
+        // --- 6. Verify Successful Login ---
+        WebElement logoutBtn = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(
+                        By.xpath("//*[contains(text(),'Logout')]")));
+
+        Assert.assertTrue("Logout button not displayed - Login might have failed!",
+                logoutBtn.isDisplayed());
+
+        System.out.println("Login successful - Test Passed!");
+
+        // --- 7. Close ---
+        driver.quit();
+		
+		
+	}
+
+}
+
+
+5)
+package excelwrite;
+
+import jxl.Workbook;
+import jxl.WorkbookSettings;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+
+import java.io.File;
+import java.util.Locale;
+
+public class ExcelWrite {
+
+    public static void main(String[] args) throws Exception {
+
+        String header[] = {"Student Name", "Subject1", "Subject2", "Subject3", "Total"};
+        String sname[] = {"Vijaya", "Birendra", "Maithili", "Diya"};
+        int marks[] = {50, 45, 60, 55};
+
+        WorkbookSettings ws = new WorkbookSettings();
+        ws.setLocale(new Locale("en", "EN"));
+
+        WritableWorkbook workbook = Workbook.createWorkbook(new File("student.xls"), ws);
+        WritableSheet sheet = workbook.createSheet("Report", 0);
+
+        for (int c = 0; c < header.length; c++) {
+            sheet.addCell(new Label(c, 0, header[c]));
+        }
+        for (int r = 0; r < sname.length; r++) {
+
+            sheet.addCell(new Label(0, r + 1, sname[r]));
+
+            for (int c = 1; c <= 3; c++) {
+                sheet.addCell(new jxl.write.Number(c, r + 1, marks[r])); 
+            }
+
+            int total = marks[r] * 3;
+            sheet.addCell(new jxl.write.Number(4, r + 1, total)); 
+        }
+
+        workbook.write();
+        workbook.close();
+
+        System.out.println("Excel File Created!");
+    }
+}
+
+
+
+
+6)
+
+Html file 
+<input type="checkbox" value="A">A<br> 
+<input type="checkbox" value="B" CHECKED>B<br> 
+<input type="checkbox" value="C">C<br> 
+<input type="checkbox" value="D" CHECKED>D<br> 
+<input type="checkbox" value="E">E<br>  
+
+
+
+package pratical6;
+
+import java.util.List; 
+import org.openqa.selenium.By; 
+import org.openqa.selenium.WebDriver; 
+import org.openqa.selenium.WebElement; 
+import org.openqa.selenium.firefox.FirefoxDriver; 
+import org.openqa.selenium.firefox.*; 
+import org.openqa.selenium.firefox.FirefoxOptions; 
+import org.openqa.selenium.firefox.FirefoxProfile; 
+import org.openqa.selenium.firefox.internal.ProfilesIni; 
+
+public class MultiCheckBox {
+
+	static String driverPath = "D:\\Download\\geckodriver-v0.34.0-win32\\geckodriver.exe"; 
+	public static void main(String[] args) { 
+	System.setProperty("webdriver.gecko.driver",driverPath); 
+	
+	WebDriver driver = new FirefoxDriver(); 
+	String appUrl = "file:///C:/Users/Downloads/multicheckbox.html";  
+	
+	driver.get(appUrl); 
+	List<WebElement> checkBoxes = 
+	driver.findElements(By.xpath("//input[@type='checkbox']")); 
+	
+	int checkedCount=0, uncheckedCount=0; 
+	for(int i=0; i<checkBoxes.size(); i++){ 
+		System.out.println(i+" checkbox is selected"+checkBoxes.get(i).isSelected()); 
+		if(checkBoxes.get(i).isSelected()) {checkedCount++;}
+		else {uncheckedCount++;} 
+	} 
+	 
+	System.out.println("No. of selected checkbox: "+checkedCount); 
+	System.out.println("No. of unselected checkbox: "+uncheckedCount); 
+	} 
+}
