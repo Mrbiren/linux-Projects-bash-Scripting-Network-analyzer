@@ -27,33 +27,27 @@ import org.junit.Assert;
 public class test {
 
 	public static void main(String[] args) {
-		// --- 1. Setup WebDriver ---
+
         System.setProperty("webdriver.chrome.driver","D:\\Download\\chrome-win64\\chrome-win64\\chrome.exe");
 
         WebDriver driver = new ChromeDriver();
         driver.manage().window().maximize();
 
-        // --- 2. Navigate to Practice Site ---
         driver.get("https://practice.gabrains.com/");
 
         WebDriverWait wait = new WebDriverWait(driver, 10);
 
-        // --- 3. Wait for Login screen elements ---
         WebElement emailField = wait.until(
                 ExpectedConditions.visibilityOfElementLocated(By.name("email")));
 
         WebElement passwordField = driver.findElement(By.name("password"));
-
-        // --- 4. Enter Credentials ---
         emailField.sendKeys("qa_testers@gabrains.com");
         passwordField.sendKeys("Password123");
 
-        // --- 5. Click Login ---
         WebElement loginBtn = driver.findElement(
                 By.xpath("//button[contains(text(),'Login')]"));
         loginBtn.click();
 
-        // --- 6. Verify Successful Login ---
         WebElement logoutBtn = wait.until(
                 ExpectedConditions.visibilityOfElementLocated(
                         By.xpath("//*[contains(text(),'Logout')]")));
@@ -63,7 +57,6 @@ public class test {
 
         System.out.println("Login successful - Test Passed!");
 
-        // --- 7. Close ---
         driver.quit();
 		
 		
