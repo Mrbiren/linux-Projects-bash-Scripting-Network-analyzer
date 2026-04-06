@@ -57,6 +57,7 @@ async function getWalletInfo() {
 }
 getWalletInfo();
 
+
 4)
 Index.js
 
@@ -101,6 +102,7 @@ transferEther();
 
 
 7)
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 contract EventContract {
     event ActionPerformed(address user, string action);
@@ -111,11 +113,13 @@ contract EventContract {
 }
 
 
+listener.js
+
 const { Web3 } = require("web3");
 const web3 = new Web3("http://127.0.0.1:7545");
 
 const contractAddress = " 0xC95eb015826053C02a6Ad859DE7c599e85872651";
-const abi = [];
+const abi = ;
 const contract = new web3.eth.Contract(abi, contractAddress);
 async function readEvents(){
 console.log("Reading events...");
@@ -135,6 +139,7 @@ readEvents();
 
 
 8)
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 contract Message {
@@ -168,7 +173,7 @@ Html
 let web3;
 let contract;
 const contractAddress = "0xc8c8C51ACF0a191b2750b09830b3FffD67f03711";
-const abi = [];
+const abi = ;
 async function connect(){
 web3 = new Web3(window.ethereum);
 await window.ethereum.request({method:"eth_requestAccounts"});
@@ -190,12 +195,6 @@ alert("Message Updated");
 </script>
 </body>
 </html>
-
-
-
-
-
-
 
 
 
