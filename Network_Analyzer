@@ -144,7 +144,7 @@ pragma solidity ^0.8.0;
 
 contract Message {
 
-    string public message = "Hello Birendra";
+    string public message = "Hello ";
 
     function setMessage(string memory newMessage) public {
         message = newMessage;
