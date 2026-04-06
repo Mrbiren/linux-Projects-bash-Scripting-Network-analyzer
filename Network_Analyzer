@@ -1,165 +1,364 @@
-3)
-package com.selenium;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.chrome.ChromeDriver;
+1)
+import Web3 from "web3";
 
-public class seleniumtest {
+const RPC_URL = "https://sepolia.infura.io/v3/1c9f0db3d6444f10ae4ac9b0c5d4ab14";
 
-	public static void main(String[] args) {
-		System.setProperty("webdriver.chrome.driver","D:\\Download\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe");
-		ChromeDriver driver = new ChromeDriver();
-		driver.get("https://www.google.com/");
-		driver.findElement(By.name("q")).sendKeys("SIWS",Keys.ENTER);
-	}
+const web3 = new Web3(RPC_URL);
 
-}
+async function getTestnetInfo() {
+    try {
+        console.log("Connecting to Ethereum Sepolia Testnet...");
 
+        const clientVersion = await web3.eth.getNodeInfo();
+        const blockNumber = await web3.eth.getBlockNumber();
+
+        console.log("Connected Successfully!");
+
+
+2)
+import Web3 from "web3";
+
+const RPC_URL = "https://sepolia.infura.io/v3/236e2b910aa149208057267514798ff0";
+
+const ADDRESS = "0xbCED97d250998AA6fFbAd2AB383383B7b5b42C71";
+
+const web3 = new Web3(RPC_URL);
+
+async function getWalletInfo() {
+    try {
+        console.log("Connecting to Ethereum Sepolia Testnet...\n");
 
 4)
-package com.testing;
+Index.js
 
-import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.*;
-import org.junit.Assert;
+require("dotenv").config();
+const { Web3 } = require("web3");
+const web3 = new Web3(process.env.RPC_URL);
+const privateKey = process.env.PRIVATE_KEY;
 
-public class test {
-
-	public static void main(String[] args) {
-
-        System.setProperty("webdriver.chrome.driver","D:\\Download\\chrome-win64\\chrome-win64\\chrome.exe");
-
-        WebDriver driver = new ChromeDriver();
-        driver.manage().window().maximize();
-
-        driver.get("https://practice.gabrains.com/");
-
-        WebDriverWait wait = new WebDriverWait(driver, 10);
-
-        WebElement emailField = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(By.name("email")));
-
-        WebElement passwordField = driver.findElement(By.name("password"));
-        emailField.sendKeys("qa_testers@gabrains.com");
-        passwordField.sendKeys("Password123");
-
-        WebElement loginBtn = driver.findElement(
-                By.xpath("//button[contains(text(),'Login')]"));
-        loginBtn.click();
-
-        WebElement logoutBtn = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(
-                        By.xpath("//*[contains(text(),'Logout')]")));
-
-        Assert.assertTrue("Logout button not displayed - Login might have failed!",
-                logoutBtn.isDisplayed());
-
-        System.out.println("Login successful - Test Passed!");
-
-        driver.quit();
-		
-		
-	}
-
+if (!privateKey) {
+    throw new Error("Private key not found in .env");
 }
 
+const senderAccount = web3.eth.accounts.privateKeyToAccount(privateKey);
+web3.eth.accounts.wallet.add(senderAccount);
 
-5)
-package excelwrite;
+const receiverAddress = "0x53daBa69d893Fd13F17283271FcA9a01fE3221d7";
 
-import jxl.Workbook;
-import jxl.WorkbookSettings;
-import jxl.write.Label;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
+async function transferEther() {
+    try {
+        const nonce = await web3.eth.getTransactionCount(senderAccount.address);
+       
+         const tx = {
+            from: senderAccount.address,
+            to: receiverAddress,
+            value: web3.utils.toWei("3", "ether"),
+            gas: 21000,
+            gasPrice: web3.utils.toWei("20", "gwei"),
+            nonce: nonce
+        };
+        const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
+        const receipt = await web3.eth.sendSignedTransaction(
+            signedTx.rawTransaction
+        );
+        console.log("Transaction Successful!");
+        console.log("Transaction Hash:", receipt.transactionHash);
+    } catch (error) {
+        console.error("Error:", error.message);
+    }
+}
+transferEther();
 
-import java.io.File;
-import java.util.Locale;
 
-public class ExcelWrite {
 
-    public static void main(String[] args) throws Exception {
+7)
+pragma solidity ^0.8.0;
+contract EventContract {
+    event ActionPerformed(address user, string action);
 
-        String header[] = {"Student Name", "Subject1", "Subject2", "Subject3", "Total"};
-        String sname[] = {"Vijaya", "Birendra", "Maithili", "Diya"};
-        int marks[] = {50, 45, 60, 55};
-
-        WorkbookSettings ws = new WorkbookSettings();
-        ws.setLocale(new Locale("en", "EN"));
-
-        WritableWorkbook workbook = Workbook.createWorkbook(new File("student.xls"), ws);
-        WritableSheet sheet = workbook.createSheet("Report", 0);
-
-        for (int c = 0; c < header.length; c++) {
-            sheet.addCell(new Label(c, 0, header[c]));
-        }
-        for (int r = 0; r < sname.length; r++) {
-
-            sheet.addCell(new Label(0, r + 1, sname[r]));
-
-            for (int c = 1; c <= 3; c++) {
-                sheet.addCell(new jxl.write.Number(c, r + 1, marks[r])); 
-            }
-
-            int total = marks[r] * 3;
-            sheet.addCell(new jxl.write.Number(4, r + 1, total)); 
-        }
-
-        workbook.write();
-        workbook.close();
-
-        System.out.println("Excel File Created!");
+    function performAction(string memory action) public {
+        emit ActionPerformed(msg.sender, action);
     }
 }
 
 
+const { Web3 } = require("web3");
+const web3 = new Web3("http://127.0.0.1:7545");
 
+const contractAddress = " 0xC95eb015826053C02a6Ad859DE7c599e85872651";
+const abi = [];
+const contract = new web3.eth.Contract(abi, contractAddress);
+async function readEvents(){
+console.log("Reading events...");
+const events = await contract.getPastEvents("ActionPerformed", {
+    fromBlock: 0,
+    toBlock: "latest"
+});
 
-6)
-
-Html file 
-<input type="checkbox" value="A">A<br> 
-<input type="checkbox" value="B" CHECKED>B<br> 
-<input type="checkbox" value="C">C<br> 
-<input type="checkbox" value="D" CHECKED>D<br> 
-<input type="checkbox" value="E">E<br>  
-
-
-
-package pratical6;
-
-import java.util.List; 
-import org.openqa.selenium.By; 
-import org.openqa.selenium.WebDriver; 
-import org.openqa.selenium.WebElement; 
-import org.openqa.selenium.firefox.FirefoxDriver; 
-import org.openqa.selenium.firefox.*; 
-import org.openqa.selenium.firefox.FirefoxOptions; 
-import org.openqa.selenium.firefox.FirefoxProfile; 
-import org.openqa.selenium.firefox.internal.ProfilesIni; 
-
-public class MultiCheckBox {
-
-	static String driverPath = "D:\\Download\\geckodriver-v0.34.0-win32\\geckodriver.exe"; 
-	public static void main(String[] args) { 
-	System.setProperty("webdriver.gecko.driver",driverPath); 
-	
-	WebDriver driver = new FirefoxDriver(); 
-	String appUrl = "file:///C:/Users/Downloads/multicheckbox.html";  
-	
-	driver.get(appUrl); 
-	List<WebElement> checkBoxes = 
-	driver.findElements(By.xpath("//input[@type='checkbox']")); 
-	
-	int checkedCount=0, uncheckedCount=0; 
-	for(int i=0; i<checkBoxes.size(); i++){ 
-		System.out.println(i+" checkbox is selected"+checkBoxes.get(i).isSelected()); 
-		if(checkBoxes.get(i).isSelected()) {checkedCount++;}
-		else {uncheckedCount++;} 
-	} 
-	 
-	System.out.println("No. of selected checkbox: "+checkedCount); 
-	System.out.println("No. of unselected checkbox: "+uncheckedCount); 
-	} 
+events.forEach(e => {
+console.log("Event Received!");
+console.log("User:", e.returnValues.user);
+console.log("Action:", e.returnValues.action);
+});
 }
+readEvents();
+
+
+
+8)
+pragma solidity ^0.8.0;
+
+contract Message {
+
+    string public message = "Hello Birendra";
+
+    function setMessage(string memory newMessage) public {
+        message = newMessage;
+    }
+
+}
+
+
+
+Html 
+<!DOCTYPE html>
+<html>
+<head>
+<title>Simple dApp</title>
+<script src="https://cdn.jsdelivr.net/npm/web3@4.0.3/dist/web3.min.js"></script>
+</head>
+<body>
+<h2>Message dApp</h2>
+<button onclick="connect()">Connect MetaMask</button>
+<br><br>
+<button onclick="readMessage()">Read Message</button>
+<p id="msg"></p>
+<input type="text" id="newmsg" placeholder="Enter new message">
+<button onclick="updateMessage()">Update Message</button>
+<script>
+let web3;
+let contract;
+const contractAddress = "0xc8c8C51ACF0a191b2750b09830b3FffD67f03711";
+const abi = [];
+async function connect(){
+web3 = new Web3(window.ethereum);
+await window.ethereum.request({method:"eth_requestAccounts"});
+contract = new web3.eth.Contract(abi, contractAddress);
+alert("Wallet Connected");
+}
+async function readMessage(){
+const message = await contract.methods.message().call();
+document.getElementById("msg").innerText = message;
+}
+async function updateMessage(){
+const accounts = await web3.eth.getAccounts();
+const newMessage = document.getElementById("newmsg").value;
+await contract.methods.setMessage(newMessage).send({
+from: accounts[0]
+});
+alert("Message Updated");
+}
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1)
+
+documents = {
+    1: "information retrieval is used in search engines",
+    2: "python is used for machine learning",
+    3: "search engines use indexing and retrieval",
+    4: "machine learning improves information retrieval"
+}
+
+inverted_index = {}
+
+for doc_id, text in documents.items():
+    words = text.split()   # split sentence into words
+    
+    for word in words:
+   if word not in inverted_index:
+            inverted_index[word] = []
+        
+        if doc_id not in inverted_index[word]:
+            inverted_index[word].append(doc_id)
+
+print("Inverted Index:\n")
+for word in inverted_index:
+    print(word, ":", inverted_index[word])
+
+query = input("\nEnter word to search: ")
+
+if query in inverted_index:
+    print("\nDocuments found:\n")
+    
+    for doc_id in inverted_index[query]:
+        print("Document", doc_id, ":", documents[doc_id])
+else:
+    print("No document found.")
+
+
+2)
+import math
+docs = {
+    1: "information retrieval system",
+    2: "machine learning and information retrieval",
+    3: "search engine uses retrieval model",
+    4: "machine learning improves search engine"
+}
+
+doc_words = {i: text.split() for i, text in docs.items()}
+
+query = input("Enter search query: ").lower().split()
+
+print("\nBoolean Model Result:")
+
+for doc_id, words in doc_words.items():
+    if all(word in words for word in query):
+        print("Doc", doc_id, ":", docs[doc_id])
+
+vocab = set(word for words in doc_words.values() for word in words)
+
+N = len(docs)
+idf = {}
+
+for term in vocab:
+    df = sum(term in words for words in doc_words.values())
+    idf[term] = math.log(N / df)
+
+print("\nVector Space Model Ranking:")
+
+for doc_id, words in doc_words.items():
+
+    score = 0
+
+    for term in query:
+        tf = words.count(term)
+        score += tf * idf.get(term, 0)
+
+    print("Doc", doc_id, "Score:", round(score,2), "-", docs[doc_id])
+
+
+
+3)
+docs = {
+    1: "information retrieval system",
+    2: "machine learning improves search",
+    3: "search engine uses retrieval model"
+}
+
+def edit_distance(a, b):
+    dp = [[0]*(len(b)+1) for _ in range(len(a)+1)]
+
+    for i in range(len(a)+1):
+        dp[i][0] = i
+    for j in range(len(b)+1):
+        dp[0][j] = j
+
+    for i in range(1, len(a)+1):
+for j in range(1, len(b)+1):
+            if a[i-1] == b[j-1]:
+                cost = 0
+            else:
+                cost = 1
+
+            dp[i][j] = min(
+                dp[i-1][j] + 1,
+                dp[i][j-1] + 1,
+                dp[i-1][j-1] + cost
+            )
+
+    return dp[len(a)][len(b)]
+
+vocab = set()
+
+for text in docs.values():
+    for word in text.split():
+        vocab.add(word)
+
+query = input("Enter search word: ").lower()
+
+best_word = None
+min_dist = 999
+
+for word in vocab:
+    d = edit_distance(query, word)
+    if d < min_dist:
+
+        min_dist = d
+        best_word = word
+
+print("Corrected word:", best_word)
+
+print("\nDocuments found:")
+
+for doc_id, text in docs.items():
+    if best_word in text:
+        print("Doc", doc_id, ":", text)
+
+
+4)
+relevant_docs = {1, 2, 3, 4}
+retrieved_docs = {2, 3, 5, 6}
+correct = relevant_docs.intersection(retrieved_docs)
+precision = len(correct) / len(retrieved_docs)
+recall = len(correct) / len(relevant_docs)
+
+f_measure = (2 * precision * recall) / (precision + recall)
+
+print("Relevant Documents:", relevant_docs)
+print("Retrieved Documents:", retrieved_docs)
+print("\nPrecision:", round(precision,2))
+print("Recall:", round(recall,2))
+print("F-Measure:", round(f_measure,2))
+
+
+
+5)
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score
+
+texts = [
+    "I love this movie",
+    "This film is amazing",
+    "I hate this movie",
+    "This film is terrible"
+]
+
+labels = ["Positive", "Positive", "Negative", "Negative"]
+
+vectorizer = CountVectorizer()
+X = vectorizer.fit_transform(texts)
+
+# Train Naive Bayes model
+model = MultinomialNB()
+model.fit(X, labels)
+
+# Test sentence
+test = ["this movie is amazing"]
+X_test = vectorizer.transform(test)
+
+prediction = model.predict(X_test)
+
+print("Predicted Category:", prediction[0])
+
+# Evaluate accuracy
+pred_train = model.predict(X)
+accuracy = accuracy_score(labels, pred_train)
+
+print("Accuracy:", accuracy)
+
