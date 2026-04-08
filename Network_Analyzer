@@ -57,7 +57,7 @@ A
 import pandas as pd
 import matplotlib.pyplot as plt
 
-data = pd.read_excel(r"C:\Users\biren\Downloads\timeseries_stock.xlsx")
+data = pd.read_excel(r"C:\Users\Downloads\timeseries_stock.xlsx")
 
 data['Date'] = pd.to_datetime(data['Date'])
 
