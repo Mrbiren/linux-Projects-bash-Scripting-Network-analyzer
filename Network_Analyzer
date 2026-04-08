@@ -1,10 +1,9 @@
 
 
 10) 
-Run this inside a cell:
+A)
 !pip install scikit-learn
 
-A)
 import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
@@ -51,7 +50,7 @@ plt.show()
 
 
 11)
-A
+A)
 !pip install pandas matplotlib statsmodels openpyxl
 
 import pandas as pd
@@ -72,13 +71,13 @@ plt.xlabel("Date")
 plt.ylabel("Close Price")
 plt.show()
 
-B
+B)
 from statsmodels.tsa.seasonal import seasonal_decompose
 result = seasonal_decompose(data['ClosePrice'], model='additive', period=6)
 result.plot()
 plt.show()
 
-C
+C)
 from statsmodels.tsa.arima.model import ARIMA
 model = ARIMA(data['ClosePrice'], order=(1,1,0))
 model_fit = model.fit()
@@ -98,7 +97,7 @@ plt.show()
 
 
 12)
-A
+A)
 !pip install pandas scikit-learn openpyxl
 
 import pandas as pd
@@ -124,7 +123,7 @@ svm_pred = svm_model.predict(X_test)
 svm_accuracy = accuracy_score(y_test, svm_pred)
 print("SVM Accuracy:", svm_accuracy)
 
-B
+B)
 from sklearn.ensemble import GradientBoostingClassifier
 gb_model = GradientBoostingClassifier()
 gb_model.fit(X_train, y_train)
@@ -133,7 +132,7 @@ gb_pred = gb_model.predict(X_test)
 gb_accuracy = accuracy_score(y_test, gb_pred)
 print("Gradient Boosting Accuracy:", gb_accuracy)
 
-C
+C)
 from sklearn.linear_model import LogisticRegression
 lr_model = LogisticRegression()
 lr_model.fit(X_train, y_train)
