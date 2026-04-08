@@ -52,7 +52,7 @@ plt.show()
 
 11)
 A
-pip install pandas matplotlib statsmodels openpyxl
+!pip install pandas matplotlib statsmodels openpyxl
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -99,7 +99,7 @@ plt.show()
 
 12)
 A
-pip install pandas scikit-learn openpyxl
+!pip install pandas scikit-learn openpyxl
 
 import pandas as pd
 
