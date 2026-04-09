@@ -1,4 +1,132 @@
 
+8)
+A)
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
+from sklearn.metrics import roc_auc_score
+from sklearn.preprocessing import StandardScaler
+
+df = pd.read_excel(r"C:\Users\biren\Downloads\breast_cancer_dataset.xlsx")	
+df = df.sample(n=50, random_state=42)
+print(df)
+df.head()
+df.shape
+
+
+X = df.drop("Target", axis=1)
+y = df["Target"]
+
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify =y
+)
+log_model = LogisticRegression(max_iter=5000)
+knn_model = KNeighborsClassifier(n_neighbors=5)
+dt_model = DecisionTreeClassifier()
+
+log_model.fit(X_train, y_train)
+knn_model.fit(X_train, y_train)
+dt_model.fit(X_train, y_train)
+
+log_pred = log_model.predict(X_test)
+knn_pred = knn_model.predict(X_test)
+dt_pred = dt_model.predict(X_test)
+
+print("Logistic Regression\n", classification_report(y_test, log_pred))
+print("KNN\n", classification_report(y_test, knn_pred))
+print("Decision Tree\n", classification_report(y_test, dt_pred))
+
+
+B)
+print("Logistic Regression")
+print(confusion_matrix(y_test, log_pred))
+print("KNN")
+print(confusion_matrix(y_test, knn_pred))
+print("Decision Tree")
+print(confusion_matrix(y_test, dt_pred))
+
+print("Logistic Regression Report")
+print(classification_report(y_test, log_pred))
+print("KNN Report")
+print(classification_report(y_test, knn_pred))
+print("Decision Tree Report")
+print(classification_report(y_test, dt_pred))
+
+log_auc = roc_auc_score(y_test, log_model.predict_proba(X_test)[:,1])
+knn_auc = roc_auc_score(y_test, knn_model.predict_proba(X_test)[:,1])
+dt_auc = roc_auc_score(y_test, dt_model.predict_proba(X_test)[:,1])
+print("Logistic Regression AUC:", log_auc)
+print("KNN AUC:", knn_auc)
+print("Decision Tree AUC:", dt_auc)
+
+
+C)
+results = pd.DataFrame({
+    "Model": ["Logistic Regression", "KNN", "Decision Tree"],
+    "ROC-AUC": [log_auc, knn_auc, dt_auc]
+})
+results
+
+best = results.loc[results["ROC-AUC"].idxmax()]
+best
+
+
+
+9)
+A)
+import os
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+
+data = pd.read_excel("data.csv")
+print(data)
+
+X = data[['Age', 'Income']]
+kmeans = KMeans(n_clusters=2, random_state=42)
+data['Cluster'] = kmeans.fit_predict(X)
+print(data)
+
+B)
+wcss = []
+for k in range(1, 6):
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    kmeans.fit(X)
+    wcss.append(kmeans.inertia_)
+
+plt.plot(range(1,6), wcss, marker='o')
+plt.title("Elbow Method 39024")
+plt.xlabel("Number of Clusters")
+plt.ylabel("WCSS")
+plt.show()
+
+from sklearn.metrics import silhouette_score
+kmeans = KMeans(n_clusters=2, random_state=42)
+labels = kmeans.fit_predict(X)
+score = silhouette_score(X, labels)
+print("Silhouette Score:", score)
+
+C)
+plt.scatter(X['Age'], X['Income'], c=data['Cluster'])
+centroids = kmeans.cluster_centers_
+plt.scatter(centroids[:,0], centroids[:,1], marker='X', s=200)
+plt.title("Cluster Visualization 39024")
+plt.xlabel("Age")
+plt.ylabel("Income")
+plt.show()
+
+print("Centroids:")
+print(kmeans.cluster_centers_)
+
+
 
 10) 
 A)
@@ -23,6 +151,7 @@ print(sum(pca.explained_variance_ratio_))
 
 print("PCA Transformed Data:")
 print(pca_data)
+
 
 B)
 pca_df = pd.DataFrame(pca_data, columns=['PC1', 'PC2'])
@@ -49,6 +178,8 @@ plt.title("After PCA")
 plt.show()
 
 
+
+
 11)
 A)
 !pip install pandas matplotlib statsmodels openpyxl
@@ -57,9 +188,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 data = pd.read_excel(r"C:\Users\Downloads\timeseries_stock.xlsx")
-
 data['Date'] = pd.to_datetime(data['Date'])
-
 data.set_index('Date', inplace=True)
 data = data.asfreq('MS')
 print(data)
@@ -145,4 +274,64 @@ print("\nModel Comparison")
 print("Logistic Regression:", lr_accuracy)
 print("SVM:", svm_accuracy)
 print("Gradient Boosting:", gb_accuracy)
+
+
+
+
+
+13)
+A)
+import pandas as pd
+import plotly.express as px
+
+df = pd.DataFrame({
+    "Date": pd.date_range("2024-01-01", periods=10),
+    "Region": ["East","West","North","South"] * 2 + ["East","West"],
+    "Product": ["Laptop","Mobile","Tablet"] * 3 + ["Laptop"],
+    "Sales": [50000,30000,20000,45000,32000,22000,48000,35000,21000,53000],
+    "Profit": [12000,8000,5000,10000,8500,5200,11000,9000,5100,13000]
+})
+
+px.bar(df, x="Region", y="Sales", color="Region", title="Sales by Region").show()
+px.line(df, x="Date", y="Sales", markers=True, title="Sales Trend").show()
+px.pie(df, names="Product", values="Profit", title="Profit by Product").show()
+
+
+B)
+import plotly.graph_objects as go
+
+total_sales = df["Sales"].sum()
+total_profit = df["Profit"].sum()
+
+go.Figure(go.Indicator(
+    mode="number",
+    value=total_sales,
+    title={"text": "Total Sales"}
+)).show()
+
+filtered_df = df[df["Region"] == "East"]
+
+px.bar(filtered_df, x="Product", y="Sales", title="East Region Sales").show()
+
+
+C)
+region_summary = df.groupby("Region")[["Sales","Profit"]].sum().reset_index()
+product_summary = df.groupby("Product")["Profit"].sum().reset_index()
+
+px.bar(region_summary, x="Region", y="Sales", title="Region-wise Sales").show()
+
+px.scatter(df, x="Sales", y="Profit", color="Product",
+           title="Sales vs Profit").show()
+
+top_region = region_summary.loc[region_summary["Sales"].idxmax(), "Region"]
+top_product = product_summary.loc[product_summary["Profit"].idxmax(), "Product"]
+
+print("Top Performing Region:", top_region)
+print("Most Profitable Product:", top_product)
+
+if top_product == "Laptop":
+    print("Recommendation: Increase Laptop promotions.")
+else:
+    print("Recommendation: Focus on high-profit products.")
+
 
