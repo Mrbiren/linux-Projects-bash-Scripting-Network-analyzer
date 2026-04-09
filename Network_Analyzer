@@ -2,22 +2,24 @@
 8)
 A)
 import pandas as pd
-import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report
-from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import StandardScaler
 
-df = pd.read_excel(r"C:\Users\biren\Downloads\breast_cancer_dataset.xlsx")	
-df = df.sample(n=50, random_state=42)
-print(df)
-df.head()
-df.shape
+data = {
+    "Radius": [14, 20, 13, 18, 12, 22, 11, 19, 15, 17],
+    "Texture": [10, 14, 12, 15, 11, 16, 10, 14, 13, 15],
+    "Perimeter": [90, 130, 85, 120, 80, 140, 75, 125, 95, 110],
+    "Area": [600, 1200, 550, 1100, 500, 1300, 480, 1150, 700, 1000],
+    "Target": [0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
+}
 
+df = pd.DataFrame(data)
+
+print(df.head())
+print(df.shape)
 
 X = df.drop("Target", axis=1)
 y = df["Target"]
@@ -26,10 +28,11 @@ scaler = StandardScaler()
 X = scaler.fit_transform(X)
 
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42, stratify =y
+    X, y, test_size=0.2, random_state=42, stratify=y
 )
-log_model = LogisticRegression(max_iter=5000)
-knn_model = KNeighborsClassifier(n_neighbors=5)
+
+log_model = LogisticRegression()
+knn_model = KNeighborsClassifier(n_neighbors=3)
 dt_model = DecisionTreeClassifier()
 
 log_model.fit(X_train, y_train)
@@ -40,30 +43,32 @@ log_pred = log_model.predict(X_test)
 knn_pred = knn_model.predict(X_test)
 dt_pred = dt_model.predict(X_test)
 
-print("Logistic Regression\n", classification_report(y_test, log_pred))
+print("\nLogistic Regression\n", classification_report(y_test, log_pred))
 print("KNN\n", classification_report(y_test, knn_pred))
 print("Decision Tree\n", classification_report(y_test, dt_pred))
 
 
 B)
+from sklearn.metrics import confusion_matrix, classification_report, roc_auc_score
+
 print("Logistic Regression")
 print(confusion_matrix(y_test, log_pred))
+
 print("KNN")
 print(confusion_matrix(y_test, knn_pred))
+
 print("Decision Tree")
 print(confusion_matrix(y_test, dt_pred))
 
-print("Logistic Regression Report")
-print(classification_report(y_test, log_pred))
-print("KNN Report")
-print(classification_report(y_test, knn_pred))
-print("Decision Tree Report")
-print(classification_report(y_test, dt_pred))
+print("\nLogistic Regression\n", classification_report(y_test, log_pred))
+print("KNN\n", classification_report(y_test, knn_pred))
+print("Decision Tree\n", classification_report(y_test, dt_pred))
 
 log_auc = roc_auc_score(y_test, log_model.predict_proba(X_test)[:,1])
 knn_auc = roc_auc_score(y_test, knn_model.predict_proba(X_test)[:,1])
 dt_auc = roc_auc_score(y_test, dt_model.predict_proba(X_test)[:,1])
-print("Logistic Regression AUC:", log_auc)
+
+print("\nLogistic Regression AUC:", log_auc)
 print("KNN AUC:", knn_auc)
 print("Decision Tree AUC:", dt_auc)
 
@@ -73,10 +78,12 @@ results = pd.DataFrame({
     "Model": ["Logistic Regression", "KNN", "Decision Tree"],
     "ROC-AUC": [log_auc, knn_auc, dt_auc]
 })
-results
+
+print(results)
 
 best = results.loc[results["ROC-AUC"].idxmax()]
-best
+print("\nBest Model:")
+print(best)
 
 
 
@@ -195,7 +202,7 @@ print(data)
 
 plt.figure()
 plt.plot(data['ClosePrice'])
-plt.title("Stock Price Over Time    39024")
+plt.title("Stock Price Over Time")
 plt.xlabel("Date")
 plt.ylabel("Close Price")
 plt.show()
@@ -220,7 +227,7 @@ plt.figure()
 plt.plot(data['ClosePrice'], label="Original")
 plt.plot(forecast, label="Forecast")
 plt.legend()
-plt.title("Stock Price Forecast   39024")
+plt.title("Stock Price Forecast")
 plt.show()
 
 
@@ -335,3 +342,82 @@ else:
     print("Recommendation: Focus on high-profit products.")
 
 
+
+
+
+ ###This is exta if comes by chance###
+
+Data Visualization
+
+!pip install pandas matplotlib seaborn openpyxl
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+data = pd.read_excel("student_marks.xlsx")
+print(data)
+
+plt.bar(data['Student'], data['Math'])
+plt.title("Math Marks of Students")
+plt.xlabel("Student")
+plt.ylabel("Marks")
+plt.show()
+
+plt.plot(data['Student'], data['Science'], marker='o')
+plt.title("Science Marks Trend")
+plt.xlabel("Student")
+plt.ylabel("Marks")
+plt.show()
+
+plt.scatter(data['Math'], data['English'])
+plt.title("Math vs English Marks")
+plt.xlabel("Math Marks")
+plt.ylabel("English Marks")
+plt.show()
+
+total = data[['Math','Science','English']].sum(axis=1)
+
+plt.pie(total, labels=data['Student'], autopct='%1.1f%%')
+plt.title("Total Marks Distribution ")
+plt.show()
+
+
+B)
+plt.figure(figsize=(10,8))
+
+plt.subplot(2,2,1)
+plt.bar(data['Student'], data['Math'])
+plt.title("Math Marks")
+
+plt.subplot(2,2,2)
+plt.plot(data['Student'], data['Science'])
+plt.title("Science Marks")
+
+plt.subplot(2,2,3)
+plt.scatter(data['Math'], data['English'])
+plt.title("Math vs English")
+
+plt.subplot(2,2,4)
+plt.pie(total, labels=data['Student'])
+plt.title("Total Marks")
+
+plt.tight_layout()
+
+plt.show()
+
+
+C)
+sns.barplot(x='Student', y='Math', data=data)
+plt.title("Math Marks using Seaborn")
+plt.show()
+
+Scatter plot:
+sns.scatterplot(x='Math', y='English', data=data)
+plt.title("Math vs English using Seaborn")
+plt.show()
+
+Line chart:
+sns.lineplot(x='Student', y='Science', data=data)
+plt.title("Science Trend using Seaborn")
+plt.show()
