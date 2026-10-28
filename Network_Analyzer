@@ -1,423 +1,478 @@
+# 1A. Design a simple linear neural network model.
 
-8)
-A)
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.preprocessing import StandardScaler
+x = float(input("Enter value of x:")) 
+w = float(input("Enter value of weight w:")) 
+b = float(input("Enter value of bias b:")) 
 
-data = {
-    "Radius": [14, 20, 13, 18, 12, 22, 11, 19, 15, 17],
-    "Texture": [10, 14, 12, 15, 11, 16, 10, 14, 13, 15],
-    "Perimeter": [90, 130, 85, 120, 80, 140, 75, 125, 95, 110],
-    "Area": [600, 1200, 550, 1100, 500, 1300, 480, 1150, 700, 1000],
-    "Target": [0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
-}
+net = int(w*x+b)
 
-df = pd.DataFrame(data)
+if (net <=0): 
+out = 0 
+elif ((net >= 0) & (net <= 1)): 
+out = net 
+else: 
+out = 1 
 
-print(df.head())
-print(df.shape)
+print("net=",net) 
+print("output=",out)
 
-X = df.drop("Target", axis=1)
-y = df["Target"]
+# 1B. Calculate the output of the neural net using both binary and bipolar sigmoidal functions.
+n = int(input("Enter number of elements: "))
+print("Enter the input")
 
-scaler = StandardScaler()
-X = scaler.fit_transform(X)
+inputs = []
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42, stratify=y
-)
+for i in range(n):
+ele = float(input())
+inputs.append(ele)
 
-log_model = LogisticRegression()
-knn_model = KNeighborsClassifier(n_neighbors=3)
-dt_model = DecisionTreeClassifier()
+print(inputs)
 
-log_model.fit(X_train, y_train)
-knn_model.fit(X_train, y_train)
-dt_model.fit(X_train, y_train)
+print("Enter the Weight")
+Weights = []
 
-log_pred = log_model.predict(X_test)
-knn_pred = knn_model.predict(X_test)
-dt_pred = dt_model.predict(X_test)
+for i in range(n):
+ele = float(input())
+Weights.append(ele)
 
-print("\nLogistic Regression\n", classification_report(y_test, log_pred))
-print("KNN\n", classification_report(y_test, knn_pred))
-print("Decision Tree\n", classification_report(y_test, dt_pred))
+print(Weights)
 
+print("The net input can be calculated by Yin = X1W1 + X2W2 + X3W3")
 
-B)
-from sklearn.metrics import confusion_matrix, classification_report, roc_auc_score
+Yin = []
 
-print("Logistic Regression")
-print(confusion_matrix(y_test, log_pred))
+for i in range(n):
+Yin.append(inputs[i] * Weights[i])
 
-print("KNN")
-print(confusion_matrix(y_test, knn_pred))
+print(round(sum(Yin)))
 
-print("Decision Tree")
-print(confusion_matrix(y_test, dt_pred))
+# 2A. Create a perceptron with an appropriate number of inputs and outputs. Train it using a fixed increment learning algorithm until no change in weights is required. Output the final weights
+n = int(input("Enter number of inputs: "))
+samples = int(input("Enter number of training samples: "))
+learning_rate = float(input("Enter learning rate: "))
 
-print("\nLogistic Regression\n", classification_report(y_test, log_pred))
-print("KNN\n", classification_report(y_test, knn_pred))
-print("Decision Tree\n", classification_report(y_test, dt_pred))
+X = []
+T = []
 
-log_auc = roc_auc_score(y_test, log_model.predict_proba(X_test)[:,1])
-knn_auc = roc_auc_score(y_test, knn_model.predict_proba(X_test)[:,1])
-dt_auc = roc_auc_score(y_test, dt_model.predict_proba(X_test)[:,1])
+print("\nEnter training data:")
 
-print("\nLogistic Regression AUC:", log_auc)
-print("KNN AUC:", knn_auc)
-print("Decision Tree AUC:", dt_auc)
+for i in range(samples):
+values = list(map(int, input(f"Input for sample {i+1}: ").split()))
 
+if len(values) != n:
+print("Invalid number of inputs!")
+exit()
 
-C)
-results = pd.DataFrame({
-    "Model": ["Logistic Regression", "KNN", "Decision Tree"],
-    "ROC-AUC": [log_auc, knn_auc, dt_auc]
-})
+target = int(input(f"Target for sample {i+1}: "))
 
-print(results)
+X.append(values)
+T.append(target)
 
-best = results.loc[results["ROC-AUC"].idxmax()]
-print("\nBest Model:")
-print(best)
+Weights = [0] * n
+bias = 0
+epoch = 0
 
+def step_function(value):
+return 1 if value >= 0 else 0
 
+while True:
+epoch += 1
+changes = 0
 
-9)
-A)
-import os
-import pandas as pd
-import matplotlib.pyplot as plt
-from sklearn.cluster import KMeans
+for i in range(samples):
+net = bias
 
-data = pd.read_excel("data.csv")
-print(data)
+for j in range(n):
+net += Weights[j] * X[i][j]
 
-X = data[['Age', 'Income']]
-kmeans = KMeans(n_clusters=2, random_state=42)
-data['Cluster'] = kmeans.fit_predict(X)
-print(data)
+output = step_function(net)
+error = T[i] - output
 
-B)
-wcss = []
-for k in range(1, 6):
-    kmeans = KMeans(n_clusters=k, random_state=42)
-    kmeans.fit(X)
-    wcss.append(kmeans.inertia_)
+if error != 0:
+for j in range(n):
+Weights[j] += learning_rate * error * X[i][j]
 
-plt.plot(range(1,6), wcss, marker='o')
-plt.title("Elbow Method 39024")
-plt.xlabel("Number of Clusters")
-plt.ylabel("WCSS")
-plt.show()
+bias += learning_rate * error
+changes += 1
 
-from sklearn.metrics import silhouette_score
-kmeans = KMeans(n_clusters=2, random_state=42)
-labels = kmeans.fit_predict(X)
-score = silhouette_score(X, labels)
-print("Silhouette Score:", score)
-
-C)
-plt.scatter(X['Age'], X['Income'], c=data['Cluster'])
-centroids = kmeans.cluster_centers_
-plt.scatter(centroids[:,0], centroids[:,1], marker='X', s=200)
-plt.title("Cluster Visualization 39024")
-plt.xlabel("Age")
-plt.ylabel("Income")
-plt.show()
-
-print("Centroids:")
-print(kmeans.cluster_centers_)
+if changes == 0:
+break
 
+print("\n=================================")
+print("PERCEPTRON TRAINING COMPLETE")
+print("EPOCHS:", epoch)
 
+for i in range(n):
+print(f"Weight {i+1}:", Weights[i])
 
-10) 
-A)
-!pip install scikit-learn
+print("BIAS:", bias)
 
-import pandas as pd
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
-data = pd.read_excel(r"pca_dataset.xlsx")
-print("Original Dataset:")
+print("\nTesting trained perceptron:")
 
-scaler = StandardScaler()
-scaled_data = scaler.fit_transform(data)
-pca = PCA(n_components=2)
-pca_data = pca.fit_transform(scaled_data)
+for i in range(samples):
+net = bias
 
-print("Explained Variance Ratio:")
-print(pca.explained_variance_ratio_)
+for j in range(n):
+net += Weights[j] * X[i][j]
 
-print("Total Variance Explained:")
-print(sum(pca.explained_variance_ratio_))
+result = step_function(net)
 
-print("PCA Transformed Data:")
-print(pca_data)
+print("Input:", X[i], "Target:", T[i], "Output:", result)
 
+# 2B.Implement basic logic gates using ANN
+gate = input("Enter Gate (AND/OR/NOT): ").upper()
 
-B)
-pca_df = pd.DataFrame(pca_data, columns=['PC1', 'PC2'])
-print(pca_df)
+if gate == "AND":
+inputs = [[0, 0], [0, 1], [1, 0], [1, 1]]
+weights = [1, 1]
+threshold = 2
 
-import matplotlib.pyplot as plt
-plt.scatter(pca_df['PC1'], pca_df['PC2'])
-plt.title("PCA Reduced Data")
-plt.xlabel("Principal Component 1")
-plt.ylabel("Principal Component 2")
-plt.show()
+elif gate == "OR":
+inputs = [[0, 0], [0, 1], [1, 0], [1, 1]]
+weights = [1, 1]
+threshold = 1
 
+elif gate == "NOT":
+inputs = [[0], [1]]
+weights = [-1]
+threshold = 0
 
-C)
-print("Original Shape:", data.shape)
-print("Reduced Shape:", pca_df.shape)
-
-plt.scatter(data['Age'], data['Income'])
-plt.title("Before PCA")
-plt.show()
-
-plt.scatter(pca_df['PC1'], pca_df['PC2'])
-plt.title("After PCA")
-plt.show()
-
-
-
-
-11)
-A)
-!pip install pandas matplotlib statsmodels openpyxl
-
-import pandas as pd
-import matplotlib.pyplot as plt
-
-data = pd.read_excel(r"C:\Users\Downloads\timeseries_stock.xlsx")
-data['Date'] = pd.to_datetime(data['Date'])
-data.set_index('Date', inplace=True)
-data = data.asfreq('MS')
-print(data)
-
-plt.figure()
-plt.plot(data['ClosePrice'])
-plt.title("Stock Price Over Time")
-plt.xlabel("Date")
-plt.ylabel("Close Price")
-plt.show()
-
-B)
-from statsmodels.tsa.seasonal import seasonal_decompose
-result = seasonal_decompose(data['ClosePrice'], model='additive', period=6)
-result.plot()
-plt.show()
-
-C)
-from statsmodels.tsa.arima.model import ARIMA
-model = ARIMA(data['ClosePrice'], order=(1,1,0))
-model_fit = model.fit()
-print(model_fit.summary())
-
-forecast = model_fit.forecast(steps=5)
-print("Forecasted Values:")
-print(forecast)
-
-plt.figure()
-plt.plot(data['ClosePrice'], label="Original")
-plt.plot(forecast, label="Forecast")
-plt.legend()
-plt.title("Stock Price Forecast")
-plt.show()
-
-
-
-12)
-A)
-!pip install pandas scikit-learn openpyxl
-
-import pandas as pd
-
-from sklearn.model_selection import train_test_split
-from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score
-
-data = pd.read_excel(r"C:\Users\Downloads\student_ml_dataset.xlsx")
-print(data)
-
-X = data[['Hours', 'Attendance']]
-y = data['Result']
-
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
-
-svm_model = SVC(kernel='linear')
-svm_model.fit(X_train, y_train)
-svm_pred = svm_model.predict(X_test)
-
-svm_accuracy = accuracy_score(y_test, svm_pred)
-print("SVM Accuracy:", svm_accuracy)
-
-B)
-from sklearn.ensemble import GradientBoostingClassifier
-gb_model = GradientBoostingClassifier()
-gb_model.fit(X_train, y_train)
-gb_pred = gb_model.predict(X_test)
-
-gb_accuracy = accuracy_score(y_test, gb_pred)
-print("Gradient Boosting Accuracy:", gb_accuracy)
-
-C)
-from sklearn.linear_model import LogisticRegression
-lr_model = LogisticRegression()
-lr_model.fit(X_train, y_train)
-lr_pred = lr_model.predict(X_test)
-
-lr_accuracy = accuracy_score(y_test, lr_pred)
-print("Logistic Regression Accuracy:", lr_accuracy)
-print("\nModel Comparison")
-
-print("Logistic Regression:", lr_accuracy)
-print("SVM:", svm_accuracy)
-print("Gradient Boosting:", gb_accuracy)
-
-
-
-
-
-13)
-A)
-import pandas as pd
-import plotly.express as px
-
-df = pd.DataFrame({
-    "Date": pd.date_range("2024-01-01", periods=10),
-    "Region": ["East","West","North","South"] * 2 + ["East","West"],
-    "Product": ["Laptop","Mobile","Tablet"] * 3 + ["Laptop"],
-    "Sales": [50000,30000,20000,45000,32000,22000,48000,35000,21000,53000],
-    "Profit": [12000,8000,5000,10000,8500,5200,11000,9000,5100,13000]
-})
-
-px.bar(df, x="Region", y="Sales", color="Region", title="Sales by Region").show()
-px.line(df, x="Date", y="Sales", markers=True, title="Sales Trend").show()
-px.pie(df, names="Product", values="Profit", title="Profit by Product").show()
-
-
-B)
-import plotly.graph_objects as go
-
-total_sales = df["Sales"].sum()
-total_profit = df["Profit"].sum()
-
-go.Figure(go.Indicator(
-    mode="number",
-    value=total_sales,
-    title={"text": "Total Sales"}
-)).show()
-
-filtered_df = df[df["Region"] == "East"]
-
-px.bar(filtered_df, x="Product", y="Sales", title="East Region Sales").show()
-
-
-C)
-region_summary = df.groupby("Region")[["Sales","Profit"]].sum().reset_index()
-product_summary = df.groupby("Product")["Profit"].sum().reset_index()
-
-px.bar(region_summary, x="Region", y="Sales", title="Region-wise Sales").show()
-
-px.scatter(df, x="Sales", y="Profit", color="Product",
-           title="Sales vs Profit").show()
-
-top_region = region_summary.loc[region_summary["Sales"].idxmax(), "Region"]
-top_product = product_summary.loc[product_summary["Profit"].idxmax(), "Product"]
-
-print("Top Performing Region:", top_region)
-print("Most Profitable Product:", top_product)
-
-if top_product == "Laptop":
-    print("Recommendation: Increase Laptop promotions.")
 else:
-    print("Recommendation: Focus on high-profit products.")
+print("Invalid choice")
+exit()
+
+print("\nGate:", gate)
+print("Outputs:")
+
+for x in inputs:
+total = 0
+
+for i in range(len(x)):
+total += x[i] * weights[i]
+
+output = 1 if total >= threshold else 0
+
+print(x, "=>", output)
+
+# 3A. Implentent Universal Logic gates using ANN
+def neuron(x1, x2, w1, w2, bias):
+return 1 if (x1 * w1 + x2 * w2 + bias) >= 0 else 0
 
 
+gate = input("Choose NAND or NOR: ").strip().upper()
+
+data = [(0, 0), (0, 1), (1, 0), (1, 1)]
+
+if gate == "NAND":
+w1, w2, bias = -1, -1, 1
+
+elif gate == "NOR":
+w1, w2, bias = -1, -1, 0.5
+
+else:
+print("Please Select an appropriate Gate!")
+exit()
+
+print(f"{gate} Gate using ANN")
+print("--------------")
+
+for x1, x2 in data:
+answer = neuron(x1, x2, w1, w2, bias)
+print(f"{x1} {x2} -> {answer}")
+
+print("\n Weights:", w1,w2)
+print("Bias:",bias)
+
+# 3B.Implement XNOR Logic gate using ANN
+Code:-
+def step(n):
+return 1 if n >= 0 else 0
 
 
+data = [([0, 0], 1), ([0, 1], 0), ([1, 0], 0), ([1, 1], 1)]
 
- ###This is exta if comes by chance###
+hiddenWeights = [[1, 1], [-1, -1]]
+hiddenBias = [-1.5, 0.5]
 
-Data Visualization
-
-!pip install pandas matplotlib seaborn openpyxl
-
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-data = pd.read_excel("student_marks.xlsx")
-print(data)
-
-plt.bar(data['Student'], data['Math'])
-plt.title("Math Marks of Students")
-plt.xlabel("Student")
-plt.ylabel("Marks")
-plt.show()
-
-plt.plot(data['Student'], data['Science'], marker='o')
-plt.title("Science Marks Trend")
-plt.xlabel("Student")
-plt.ylabel("Marks")
-plt.show()
-
-plt.scatter(data['Math'], data['English'])
-plt.title("Math vs English Marks")
-plt.xlabel("Math Marks")
-plt.ylabel("English Marks")
-plt.show()
-
-total = data[['Math','Science','English']].sum(axis=1)
-
-plt.pie(total, labels=data['Student'], autopct='%1.1f%%')
-plt.title("Total Marks Distribution ")
-plt.show()
+outputWeight = [1, 1]
+outputBias = -0.5
 
 
-B)
-plt.figure(figsize=(10,8))
+def xnorANN(x):
+hidden = []
 
-plt.subplot(2,2,1)
-plt.bar(data['Student'], data['Math'])
-plt.title("Math Marks")
+for i in range(2):
+value = x[0] * hiddenWeights[i][0] + x[1] * hiddenWeights[i][1] + hiddenBias[i]
+hidden.append(step(value))
 
-plt.subplot(2,2,2)
-plt.plot(data['Student'], data['Science'])
-plt.title("Science Marks")
+result = hidden[0] * outputWeight[0] + hidden[1] * outputWeight[1] + outputBias
 
-plt.subplot(2,2,3)
-plt.scatter(data['Math'], data['English'])
-plt.title("Math vs English")
-
-plt.subplot(2,2,4)
-plt.pie(total, labels=data['Student'])
-plt.title("Total Marks")
-
-plt.tight_layout()
-
-plt.show()
+return hidden, step(result)
 
 
-C)
-sns.barplot(x='Student', y='Math', data=data)
-plt.title("Math Marks using Seaborn")
-plt.show()
+print("XNOR using ANN")
+print("--------------")
 
-Scatter plot:
-sns.scatterplot(x='Math', y='English', data=data)
-plt.title("Math vs English using Seaborn")
-plt.show()
+for x, target in data:
+hidden, output = xnorANN(x)
 
-Line chart:
-sns.lineplot(x='Student', y='Science', data=data)
-plt.title("Science Trend using Seaborn")
-plt.show()
+print("Input:",x,"Hidden:",hidden,"Output:",output,"Target:",target)
+
+# 4A. Generate AND/NOT fitnction using McCulloch-Pitts neural net.
+def mp_neuron(inputs, weights, threshold):
+total = sum(x * w for x, w in zip(inputs, weights))
+
+if total >= threshold:
+return 1
+else:
+return 0
+
+print("AND Function")
+print("AB | Output")
+
+for A in [0, 1]:
+for B in [0, 1]:
+output = mp_neuron ([A, B], [1, 1], 2)
+print(A, B, "|", output)
+
+print("\nNOT Function")
+print("A | Output")
+
+for A in [0, 1]:
+output = mp_neuron([A], [-1], 0)
+print(A, "|", output)
+
+# 4B. Generate XOR function using McCulloch-Pitts neural net.
+def neuron(inputs, weights, threshold):
+total = sum(x * w for x, w in zip(inputs, weights))
+
+if total >= threshold:
+return 1
+else:
+return 0
+
+
+def AND(A, B):
+return neuron([A, B], [1, 1], 2)
+
+
+def OR(A, B):
+return neuron([A, B], [1, 1], 1)
+
+
+def NOT(A):
+return neuron([A], [-1], 0)
+
+
+print("A B | XOR")
+
+for A in [0, 1]:
+for B in [0, 1]:
+X1 = AND(A, NOT(B))
+X2 = AND(NOT(A), B)
+XOR = OR(X1, X2)
+
+print(A, B, "|", XOR)
+
+# 5A Write a program to implement Hebb's rule.
+X = [
+[1,1],
+[1,-1],
+[-1,1],
+[-1,-1]
+]
+print("---------INPUT_DATA-----------")
+print(X)
+Y= [1,-1,-1,-1]
+print("----------TARGET_OUTPUT-----------")
+print(X)
+
+w1=0
+w2=0
+bias=0
+
+for i in range (len(X)):
+x1=X[i][0]
+x2=X[i][1]
+y=Y[i]
+
+w1=w1+w1*y
+w2=w2+w2*y
+bias = bias + y
+
+print("Final Weights:")
+print("w1=", w1)
+print("w2=", w2)
+print("Bias=",bias)
+
+# 5B Write a program to implement of delta rule.
+X = [1, 2, 3, 4]
+T = [2, 4, 6, 8]
+
+w = 0
+b = 0
+eta = 0.1
+epochs = 10
+
+for epoch in range(epochs):
+for i in range(len(X)):
+y = w * X[i] + b
+error = T[i] - y
+
+w = w + eta * error * X[i]
+b = b + eta * error
+
+print("Final Weight =", w)
+print("Final Bias =", b)
+
+print("\nOutput:")
+for x in X:
+y = w * x + b
+print("Input =", x, "Output =", round(y, 2))
+
+
+# 6A. Write program for Back propagation Algorithm
+
+import math
+def sigmoid(x):
+return 1 / (1 + math.exp(-x))
+def sigmoidDerivative(x):
+return x * (1 - x)
+x = [0, 1]
+target = 1
+w1 = 0.5
+w2 = 0.5
+learningRate = 0.5
+for epoch in range(1000):
+hidden = sigmoid(x[0] * w1)
+output = sigmoid(hidden * w2)
+error = target - output
+outputDelta = error * sigmoidDerivative(output)
+hiddenError = outputDelta * w2
+hiddenDelta = hiddenError * sigmoidDerivative(hidden)
+w2 = w2 + learningRate * outputDelta * hidden
+w1 = w1 + learningRate * hiddenDelta * x[0]
+hidden = sigmoid(x[0] * w1)
+output = sigmoid(hidden * w2)
+print("Final Weight w1 =", round(w1, 4))
+print("Final Weight w2 =", round(w2, 4))
+print("Final Output =", round(output, 4))
+
+
+# 6B. Write a program for the error Backpropagation algorithm.
+
+x=float(input("Enter input:"))
+target = float(input("Enter target output:"))
+weight = 0.5
+learning_rate = 0.1
+output = x * weight
+error = target - output
+
+weight = weight + learning_rate * error * x
+new_output = x * weight 
+print( "\n Updated weight :", weight)
+print ( " \n new Output:", new_output)
+print("\n final Error", target-new_output)
+
+# 7 Write a program for Hopfield Network.
+
+import numpy as np 
+pattern = np.array([1,1,-1,-1])
+
+weights = np.outer(pattern,pattern)
+
+np.fill_diagonal(weights,0)
+
+input_pattern = np.array([1,-1,-1,-1])
+
+output = np.sign(np.dot(weights,input_pattern))
+
+print("Input Pattern :",input_pattern)
+print("Recalled Pattern:",output)
+
+
+# 8 Write a program to implement the Kohonen Self-organizing map.
+
+import numpy as np
+
+data = np.array([
+[1,1],
+[1,2],
+[5,5],
+[6,5]
+])
+
+weights = np.array([
+[1,1],
+[5,5]
+],dtype=float)
+
+learning_rate =0.5
+
+for x in data:
+distance = np.linalg.norm(weights -x, axis=1)
+
+winner = np.argmin(distance)
+
+weights[winner]= weights[winner]+learning_rate*(x-weights[winner])
+
+print("Final Weights:")
+print(weights)
+
+new_data = np.array([1,2])
+distance = np.linalg.norm(weights - new_data,axis=1)
+winner=np.argmin(distance)
+print("\nNew Input:", new_data)
+print("Winning Neuron:",winner+1)
+
+
+# 9 Write a program for Linear separation.
+import numpy as np
+
+pattern = np.array([1,1,-1,-1])
+
+weights = np.outer(pattern,pattern)
+
+np.fill_diagonal(weights,0)
+
+input_pattern = np.array([1,-1,-1,-1])
+
+output =np.sign(np.dot(weights,input_pattern))
+
+print("Stored Pattern:", pattern)
+
+print("Noisy Pattern :", input_pattern)
+
+
+# 10 Write a program for the Hopfield network model for associative memory
+
+data =[
+(1,1,0),
+(2,1,0),
+(4,4,1),
+(5,4,1)
+]
+
+w1 = 0
+w2 = 0
+
+bias = 0
+
+learning_rate =1
+
+for i in range(10):
+for x1,x2,target in data:
+output = 1 if (w1*x1 + w2*x2 + bias) > 0 else 0
+error = target - output
+w1 = w1 + learning_rate * error * x1
+w2 = w2 + learning_rate * error * x2
+bias = bias + learning_rate * error
+
+print("Final Weights:" , w1 ,w2)
+print("Bias:", bias)
+
+x1 = float(input("Enter X1:"))
+x2 = float(input("Enter X2:"))
+
+result = 1 if (w1*x1 + w2*x2 + bias) > 0 else 0
+print("Class=",result)
