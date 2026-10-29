@@ -179,6 +179,76 @@ public class indi {
     
 }
 
+# practical 4 mysql 
+
+show databases;
+
+create database mscit;
+
+use mscit;
+
+create table EBOOK ( isbn varchar (100) primary key, bookname varchar (100), bookprice int);
+
+insert into EBOOK values ( '123-456' , 'Cloud-Computing', '790')
+
+netbeans >> web service >> right click on webservice >> new web service >> BookDetails >> package name >> design add operation>> name getBookDetails >> isbn 
+
+
+package webservice;
+
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+import javax.jws.WebService;
+import javax.ejb.Stateless;
+import java.sql.*;
+
+@WebService(serviceName = "BookDetails")
+@Stateless()
+public class BookDetails {
+
+    @WebMethod(operationName = "getbookDetails")
+    public String getbookDetails(
+            @WebParam(name = "isbn") String isbn) {
+
+        String bookdetails;
+
+        String url = "jdbc:mysql://localhost:3306/msc_it";
+        String user = "root";
+        String password = "root";
+
+        String query = "SELECT * FROM ebook WHERE isbn = ?";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            try (Connection con = DriverManager.getConnection(
+                        url, user, password);
+                 PreparedStatement stmt = con.prepareStatement(query)) {
+
+                stmt.setString(1, isbn);
+
+                try (ResultSet rs = stmt.executeQuery()) {
+
+                    if (rs.next()) {
+                        bookdetails = "The Name of the Book is "
+                                + rs.getString("bookname")
+                                + " and cost of the book is "
+                                + rs.getString("bookprice");
+                    } else {
+                        bookdetails = "No book found for ISBN: " + isbn;
+                    }
+                }
+            }
+
+        } catch (ClassNotFoundException | SQLException ex) {
+            bookdetails = "Database connection failed: "
+                    + ex.getMessage();
+            ex.printStackTrace();
+        }
+
+        return bookdetails;
+    }
+}
 
 
 # practical 8 infrastructure as a service 
