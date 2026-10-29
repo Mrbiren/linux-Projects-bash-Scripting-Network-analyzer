@@ -17,34 +17,31 @@ print("net=",net)
 print("output=",out)
 
 # 1B. Calculate the output of the neural net using both binary and bipolar sigmoidal functions.
-n = int(input("Enter number of elements: "))
-print("Enter the input")
 
-inputs = []
+import math
 
-for i in range(n):
-ele = float(input())
-inputs.append(ele)
+def binary_sigmoid(x):
+    return 1 / (1 + math.exp(-x))
 
-print(inputs)
+def bipolar_sigmoid(x):
+    return 2 / (1 + math.exp(-x)) - 1
 
-print("Enter the Weight")
-Weights = []
+x1 = 1
+x2 = 0
 
-for i in range(n):
-ele = float(input())
-Weights.append(ele)
+w1 = 0.5
+w2 = 0.5
+bias = 0.5
 
-print(Weights)
+net = x1*w1 + x2*w2 + bias
 
-print("The net input can be calculated by Yin = X1W1 + X2W2 + X3W3")
+binary = binary_sigmoid(net)
+bipolar = bipolar_sigmoid(net)
 
-Yin = []
+print("Net Input:", net)
+print("Binary Sigmoid Output:", binary)
+print("Bipolar Sigmoid Output:", bipolar)
 
-for i in range(n):
-Yin.append(inputs[i] * Weights[i])
-
-print(round(sum(Yin)))
 
 # 2A. Create a perceptron with an appropriate number of inputs and outputs. Train it using a fixed increment learning algorithm until no change in weights is required. Output the final weights
 n = int(input("Enter number of inputs: "))
