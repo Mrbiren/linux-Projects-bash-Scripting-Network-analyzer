@@ -1,475 +1,162 @@
-# 1A. Design a simple linear neural network model.
-
-x = float(input("Enter value of x:")) 
-w = float(input("Enter value of weight w:")) 
-b = float(input("Enter value of bias b:")) 
-
-net = int(w*x+b)
-
-if (net <=0): 
-out = 0 
-elif ((net >= 0) & (net <= 1)): 
-out = net 
-else: 
-out = 1 
-
-print("net=",net) 
-print("output=",out)
-
-# 1B. Calculate the output of the neural net using both binary and bipolar sigmoidal functions.
-
-import math
-
-def binary_sigmoid(x):
-    return 1 / (1 + math.exp(-x))
-
-def bipolar_sigmoid(x):
-    return 2 / (1 + math.exp(-x)) - 1
-
-x1 = 1
-x2 = 0
-
-w1 = 0.5
-w2 = 0.5
-bias = 0.5
-
-net = x1*w1 + x2*w2 + bias
-
-binary = binary_sigmoid(net)
-bipolar = bipolar_sigmoid(net)
-
-print("Net Input:", net)
-print("Binary Sigmoid Output:", binary)
-print("Bipolar Sigmoid Output:", bipolar)
-
-
-# 2A. Create a perceptron with an appropriate number of inputs and outputs. Train it using a fixed increment learning algorithm until no change in weights is required. Output the final weights
-n = int(input("Enter number of inputs: "))
-samples = int(input("Enter number of training samples: "))
-learning_rate = float(input("Enter learning rate: "))
-
-X = []
-T = []
-
-print("\nEnter training data:")
-
-for i in range(samples):
-values = list(map(int, input(f"Input for sample {i+1}: ").split()))
-
-if len(values) != n:
-print("Invalid number of inputs!")
-exit()
-
-target = int(input(f"Target for sample {i+1}: "))
-
-X.append(values)
-T.append(target)
-
-Weights = [0] * n
-bias = 0
-epoch = 0
-
-def step_function(value):
-return 1 if value >= 0 else 0
-
-while True:
-epoch += 1
-changes = 0
-
-for i in range(samples):
-net = bias
-
-for j in range(n):
-net += Weights[j] * X[i][j]
-
-output = step_function(net)
-error = T[i] - output
-
-if error != 0:
-for j in range(n):
-Weights[j] += learning_rate * error * X[i][j]
-
-bias += learning_rate * error
-changes += 1
-
-if changes == 0:
-break
-
-print("\n=================================")
-print("PERCEPTRON TRAINING COMPLETE")
-print("EPOCHS:", epoch)
-
-for i in range(n):
-print(f"Weight {i+1}:", Weights[i])
-
-print("BIAS:", bias)
-
-print("\nTesting trained perceptron:")
-
-for i in range(samples):
-net = bias
-
-for j in range(n):
-net += Weights[j] * X[i][j]
-
-result = step_function(net)
-
-print("Input:", X[i], "Target:", T[i], "Output:", result)
-
-# 2B.Implement basic logic gates using ANN
-gate = input("Enter Gate (AND/OR/NOT): ").upper()
-
-if gate == "AND":
-inputs = [[0, 0], [0, 1], [1, 0], [1, 1]]
-weights = [1, 1]
-threshold = 2
-
-elif gate == "OR":
-inputs = [[0, 0], [0, 1], [1, 0], [1, 1]]
-weights = [1, 1]
-threshold = 1
-
-elif gate == "NOT":
-inputs = [[0], [1]]
-weights = [-1]
-threshold = 0
-
-else:
-print("Invalid choice")
-exit()
-
-print("\nGate:", gate)
-print("Outputs:")
-
-for x in inputs:
-total = 0
-
-for i in range(len(x)):
-total += x[i] * weights[i]
-
-output = 1 if total >= threshold else 0
-
-print(x, "=>", output)
-
-# 3A. Implentent Universal Logic gates using ANN
-def neuron(x1, x2, w1, w2, bias):
-return 1 if (x1 * w1 + x2 * w2 + bias) >= 0 else 0
-
-
-gate = input("Choose NAND or NOR: ").strip().upper()
-
-data = [(0, 0), (0, 1), (1, 0), (1, 1)]
-
-if gate == "NAND":
-w1, w2, bias = -1, -1, 1
-
-elif gate == "NOR":
-w1, w2, bias = -1, -1, 0.5
-
-else:
-print("Please Select an appropriate Gate!")
-exit()
-
-print(f"{gate} Gate using ANN")
-print("--------------")
-
-for x1, x2 in data:
-answer = neuron(x1, x2, w1, w2, bias)
-print(f"{x1} {x2} -> {answer}")
-
-print("\n Weights:", w1,w2)
-print("Bias:",bias)
-
-# 3B.Implement XNOR Logic gate using ANN
-Code:-
-def step(n):
-return 1 if n >= 0 else 0
-
-
-data = [([0, 0], 1), ([0, 1], 0), ([1, 0], 0), ([1, 1], 1)]
-
-hiddenWeights = [[1, 1], [-1, -1]]
-hiddenBias = [-1.5, 0.5]
-
-outputWeight = [1, 1]
-outputBias = -0.5
-
-
-def xnorANN(x):
-hidden = []
-
-for i in range(2):
-value = x[0] * hiddenWeights[i][0] + x[1] * hiddenWeights[i][1] + hiddenBias[i]
-hidden.append(step(value))
-
-result = hidden[0] * outputWeight[0] + hidden[1] * outputWeight[1] + outputBias
-
-return hidden, step(result)
-
-
-print("XNOR using ANN")
-print("--------------")
-
-for x, target in data:
-hidden, output = xnorANN(x)
-
-print("Input:",x,"Hidden:",hidden,"Output:",output,"Target:",target)
-
-# 4A. Generate AND/NOT fitnction using McCulloch-Pitts neural net.
-def mp_neuron(inputs, weights, threshold):
-total = sum(x * w for x, w in zip(inputs, weights))
-
-if total >= threshold:
-return 1
-else:
-return 0
-
-print("AND Function")
-print("AB | Output")
-
-for A in [0, 1]:
-for B in [0, 1]:
-output = mp_neuron ([A, B], [1, 1], 2)
-print(A, B, "|", output)
-
-print("\nNOT Function")
-print("A | Output")
-
-for A in [0, 1]:
-output = mp_neuron([A], [-1], 0)
-print(A, "|", output)
-
-# 4B. Generate XOR function using McCulloch-Pitts neural net.
-def neuron(inputs, weights, threshold):
-total = sum(x * w for x, w in zip(inputs, weights))
-
-if total >= threshold:
-return 1
-else:
-return 0
-
-
-def AND(A, B):
-return neuron([A, B], [1, 1], 2)
-
-
-def OR(A, B):
-return neuron([A, B], [1, 1], 1)
-
-
-def NOT(A):
-return neuron([A], [-1], 0)
-
-
-print("A B | XOR")
-
-for A in [0, 1]:
-for B in [0, 1]:
-X1 = AND(A, NOT(B))
-X2 = AND(NOT(A), B)
-XOR = OR(X1, X2)
-
-print(A, B, "|", XOR)
-
-# 5A Write a program to implement Hebb's rule.
-X = [
-[1,1],
-[1,-1],
-[-1,1],
-[-1,-1]
-]
-print("---------INPUT_DATA-----------")
-print(X)
-Y= [1,-1,-1,-1]
-print("----------TARGET_OUTPUT-----------")
-print(X)
-
-w1=0
-w2=0
-bias=0
-
-for i in range (len(X)):
-x1=X[i][0]
-x2=X[i][1]
-y=Y[i]
-
-w1=w1+w1*y
-w2=w2+w2*y
-bias = bias + y
-
-print("Final Weights:")
-print("w1=", w1)
-print("w2=", w2)
-print("Bias=",bias)
-
-# 5B Write a program to implement of delta rule.
-X = [1, 2, 3, 4]
-T = [2, 4, 6, 8]
-
-w = 0
-b = 0
-eta = 0.1
-epochs = 10
-
-for epoch in range(epochs):
-for i in range(len(X)):
-y = w * X[i] + b
-error = T[i] - y
-
-w = w + eta * error * X[i]
-b = b + eta * error
-
-print("Final Weight =", w)
-print("Final Bias =", b)
-
-print("\nOutput:")
-for x in X:
-y = w * x + b
-print("Input =", x, "Output =", round(y, 2))
-
-
-# 6A. Write program for Back propagation Algorithm
-
-import math
-def sigmoid(x):
-return 1 / (1 + math.exp(-x))
-def sigmoidDerivative(x):
-return x * (1 - x)
-x = [0, 1]
-target = 1
-w1 = 0.5
-w2 = 0.5
-learningRate = 0.5
-for epoch in range(1000):
-hidden = sigmoid(x[0] * w1)
-output = sigmoid(hidden * w2)
-error = target - output
-outputDelta = error * sigmoidDerivative(output)
-hiddenError = outputDelta * w2
-hiddenDelta = hiddenError * sigmoidDerivative(hidden)
-w2 = w2 + learningRate * outputDelta * hidden
-w1 = w1 + learningRate * hiddenDelta * x[0]
-hidden = sigmoid(x[0] * w1)
-output = sigmoid(hidden * w2)
-print("Final Weight w1 =", round(w1, 4))
-print("Final Weight w2 =", round(w2, 4))
-print("Final Output =", round(output, 4))
-
-
-# 6B. Write a program for the error Backpropagation algorithm.
-
-x=float(input("Enter input:"))
-target = float(input("Enter target output:"))
-weight = 0.5
-learning_rate = 0.1
-output = x * weight
-error = target - output
-
-weight = weight + learning_rate * error * x
-new_output = x * weight 
-print( "\n Updated weight :", weight)
-print ( " \n new Output:", new_output)
-print("\n final Error", target-new_output)
-
-# 7 Write a program for Hopfield Network.
-
-import numpy as np 
-pattern = np.array([1,1,-1,-1])
-
-weights = np.outer(pattern,pattern)
-
-np.fill_diagonal(weights,0)
-
-input_pattern = np.array([1,-1,-1,-1])
-
-output = np.sign(np.dot(weights,input_pattern))
-
-print("Input Pattern :",input_pattern)
-print("Recalled Pattern:",output)
-
-
-# 8 Write a program to implement the Kohonen Self-organizing map.
-
-import numpy as np
-
-data = np.array([
-[1,1],
-[1,2],
-[5,5],
-[6,5]
-])
-
-weights = np.array([
-[1,1],
-[5,5]
-],dtype=float)
-
-learning_rate =0.5
-
-for x in data:
-distance = np.linalg.norm(weights -x, axis=1)
-
-winner = np.argmin(distance)
-
-weights[winner]= weights[winner]+learning_rate*(x-weights[winner])
-
-print("Final Weights:")
-print(weights)
-
-new_data = np.array([1,2])
-distance = np.linalg.norm(weights - new_data,axis=1)
-winner=np.argmin(distance)
-print("\nNew Input:", new_data)
-print("Winning Neuron:",winner+1)
-
-
-# 9 Write a program for Linear separation.
-import numpy as np
-
-pattern = np.array([1,1,-1,-1])
-
-weights = np.outer(pattern,pattern)
-
-np.fill_diagonal(weights,0)
-
-input_pattern = np.array([1,-1,-1,-1])
-
-output =np.sign(np.dot(weights,input_pattern))
-
-print("Stored Pattern:", pattern)
-
-print("Noisy Pattern :", input_pattern)
-
-
-# 10 Write a program for the Hopfield network model for associative memory
-
-data =[
-(1,1,0),
-(2,1,0),
-(4,4,1),
-(5,4,1)
-]
-
-w1 = 0
-w2 = 0
-
-bias = 0
-
-learning_rate =1
-
-for i in range(10):
-for x1,x2,target in data:
-output = 1 if (w1*x1 + w2*x2 + bias) > 0 else 0
-error = target - output
-w1 = w1 + learning_rate * error * x1
-w2 = w2 + learning_rate * error * x2
-bias = bias + learning_rate * error
-
-print("Final Weights:" , w1 ,w2)
-print("Bias:", bias)
-
-x1 = float(input("Enter X1:"))
-x2 = float(input("Enter X2:"))
-
-result = 1 if (w1*x1 + w2*x2 + bias) > 0 else 0
-print("Class=",result)
+ 
+# Practical 1 Aim: - Show the implementation of exchanging information between client and server 
+using socket programming 
+ 
+Step 1:-  Create a ‘Server.py’ file and type in the following code  
+Code:- 
+ 
+from socket import * 
+s = socket (AF_INET, SOCK_STREAM) 
+s.bind(("localhost",9999)) 
+s.listen(1) 
+while True: 
+    client ,addr = s.accept() 
+    print(addr,"joined the party") 
+    client.send("You have joined Successfully" .encode("ascii")) 
+    client.close() 
+ 
+ 
+Steps 2:-  Create a ‘Client.py’ file and type in the following code 
+Code:- 
+from socket import * 
+s = socket(AF_INET , SOCK_STREAM) 
+s.connect(("localhost",9999)) 
+print(s.recv(1024).decode("ascii")) 
+s.close()
+
+
+ # Practical 2:- Develop a simple calculator application using RMI.
+
+step 1 :- create a new project name it RMI
+create java interface and name it adder
+ 
+CODE: 
+
+package rmiexample; 
+import java.rmi.Remote; 
+import java.rmi.RemoteException; 
+public interface adder extends Remote { 
+    int add(int a, int b) throws RemoteException; 
+    int sub(int a, int b) throws RemoteException; 
+    int mul(int a, int b) throws RemoteException; 
+    int div(int a, int b) throws RemoteException; 
+} 
+
+
+create java class name it server
+
+CODE: 
+
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry; 
+import java.rmi.registry.Registry; 
+import java.rmi.server.UnicastRemoteObject; 
+public class server extends UnicastRemoteObject implements adder { 
+    public server() throws RemoteException { 
+        super(); 
+    } 
+    @Override 
+    public int add(int a, int b) throws RemoteException { 
+        return a + b; 
+    } 
+    @Override 
+    public int sub(int a, int b) throws RemoteException { 
+        return a - b; 
+    } 
+    @Override 
+    public int mul(int a, int b) throws RemoteException { 
+        return a * b; 
+    } 
+    @Override 
+    public int div(int a, int b) throws RemoteException { 
+        return a / b; 
+    } 
+    public static void main(String args[]) { 
+        try { 
+            Registry reg = LocateRegistry.createRegistry(4445); 
+            reg.rebind("server", new server()); 
+            System.out.println("Server is running..."); 
+        } catch (Exception e) { 
+            System.out.println(e); 
+        } 
+    } 
+}
+
+create java class name it client
+
+CODE: 
+
+import java.rmi.registry.LocateRegistry; 
+import java.rmi.registry.Registry; 
+import java.util.Scanner; 
+public class client { 
+    public static void main(String[] args) { 
+        int result; 
+        double result1; 
+        String decision = "Yes"; 
+        try { 
+            Scanner sc = new Scanner(System.in); 
+            do { 
+                Registry reg = LocateRegistry.getRegistry("localhost", 4445);  
+                adder add = (adder) reg.lookup("server"); 
+                System.out.println("\nCalculator"); 
+              
+                System.out.println("1. Addition"); 
+                System.out.println("2. Subtraction"); 
+                System.out.println("3. Multiplication"); 
+                System.out.println("4. Division"); 
+                System.out.print("Enter your choice: "); 
+                int no = sc.nextInt(); 
+                System.out.print("Enter first number: "); 
+                int a = sc.nextInt(); 
+                System.out.print("Enter second number: "); 
+                int b = sc.nextInt(); 
+                
+                switch (no) { 
+                    case 1: 
+                        result = add.add(a, b); 
+                        System.out.println("Addition = " + result); 
+                        break; 
+                    case 2: 
+                        result = add.sub(a, b); 
+                        System.out.println("Subtraction = " + result); 
+                        break; 
+                    case 3: 
+                        result = add.mul(a, b); 
+                        System.out.println("Multiplication = " + result); 
+                        break; 
+                    case 4: 
+                        if (b == 0) { 
+                            System.out.println("Division by zero not allowed."); 
+                        } else { 
+                            result1 = add.div(a, b); 
+                            System.out.println("Division = " + result1); 
+                        } 
+                        break; 
+                    default: 
+                        System.out.println("Invalid choice."); 
+                } 
+ 
+                System.out.print("\nDo you want to calculate again? (Yes/No): "); 
+                decision = sc.next(); 
+            } while (decision.equalsIgnoreCase("Yes")); 
+        } catch (Exception e) { 
+            System.out.println(e); 
+        } 
+    } 
+}  
+
+click on run then click on clean and build project 
+
+right click on server run it and then right click on client  
+
+
+
+
+# practical 8 infrastructure as a service 
+
+#!/bin/bash
+dnf install -y httpd
+systemctl enable httpd
+systemctl start httpd
+echo '<html><h1>Hello From Your Web Server!</h1></html>' > /var/www/html/index.html
