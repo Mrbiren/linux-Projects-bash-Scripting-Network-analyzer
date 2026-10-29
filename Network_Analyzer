@@ -151,6 +151,34 @@ click on run then click on clean and build project
 right click on server run it and then right click on client  
 
 
+# practical 3 web services
+
+create a new project >> select web application and type calculator
+
+right click on calculator >> new >> web service >> name : indi , package : com.in.indi
+
+click on design >> clck on add operation >> add num 1 and num 2 , type = int
+paste the below code and deploy
+
+
+@WebService(serviceName = "indi")
+public class indi {
+
+    /**
+     * Web service operation
+     */
+    @WebMethod(operationName = "Addition")
+    
+    
+    public int Addition(@WebParam(name = "num1") int num1, @WebParam(name = "num2") int num2) {
+        //TODO write your implementation code here:
+        int Addition = num1 + num2;
+        return Addition;
+
+    }
+    
+}
+
 
 
 # practical 8 infrastructure as a service 
