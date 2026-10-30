@@ -1,260 +1,177 @@
- 
-# Practical 1 Aim: - Show the implementation of exchanging information between client and server 
-using socket programming 
- 
-Step 1:-  Create a ‘Server.py’ file and type in the following code  
-Code:- 
- 
-from socket import * 
-s = socket (AF_INET, SOCK_STREAM) 
-s.bind(("localhost",9999)) 
-s.listen(1) 
-while True: 
-    client ,addr = s.accept() 
-    print(addr,"joined the party") 
-    client.send("You have joined Successfully" .encode("ascii")) 
-    client.close() 
- 
- 
-Steps 2:-  Create a ‘Client.py’ file and type in the following code 
-Code:- 
-from socket import * 
-s = socket(AF_INET , SOCK_STREAM) 
-s.connect(("localhost",9999)) 
-print(s.recv(1024).decode("ascii")) 
-s.close()
+https://github.com/Unknownub3201/Practical-Dataset/
+Dataset 
+
+#Practical 2A  Conversion from different formats to HOURS format:  Text-Delimited to HORUS. 
+
+code:- 
+
+import pandas as pd
+
+input_file = "Country_Code.csv"
+
+input_data = pd.read_csv(input_file, encoding="latin-1")
+
+print("======== Input Data ================")
+print(input_data)
+
+output_data = input_data.copy()
+
+output_data.drop(
+    labels=["ISO-2-CODE", "ISO-3-Code"],
+    axis=1,
+    inplace=True,
+    errors="ignore"
+)
+
+output_data.rename(
+    columns={
+        "Country": "Country_Name",
+        "ISO-M49": "CountryCode"
+    },
+    inplace=True
+)
+
+print("Column Names:")
+print(output_data.columns)
+
+output_data.sort_values(
+    by="Country_Name",
+    ascending=False,
+    inplace=True
+)
+
+print("======== Output Data ================")
+print(output_data)
+
+output_File = "csv-horus-Country-codes.csv"
+
+output_data.to_csv(output_File, index=False)
+
+print("CSV file successfully created!")
+
+-----------------------------------------------------------------------------------------
+
+Practical 2B Conversion from different formats to HOURS format:  XML to HORUS. 
 
 
- # Practical 2:- Develop a simple calculator application using RMI.
+import pandas as pd
+import xml.etree.cElementTree as et
 
-step 1 :- create a new project name it RMI
-create java interface and name it adder
- 
-CODE: 
+Input_file = "Country_Code.xml"
 
-package rmiexample; 
-import java.rmi.Remote; 
-import java.rmi.RemoteException; 
-public interface adder extends Remote { 
-    int add(int a, int b) throws RemoteException; 
-    int sub(int a, int b) throws RemoteException; 
-    int mul(int a, int b) throws RemoteException; 
-    int div(int a, int b) throws RemoteException; 
-} 
+with open(Input_file, "r", encoding="utf-8") as file:
+    InputData = file.read()
+
+print("=====================Input data=========================")
+print(InputData)
 
 
-create java class name it server
+def func(data):
+    root = et.XML(data)
+    all_records = []
 
-CODE: 
+    for child in root:
+        record = {}
 
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry; 
-import java.rmi.registry.Registry; 
-import java.rmi.server.UnicastRemoteObject; 
-public class server extends UnicastRemoteObject implements adder { 
-    public server() throws RemoteException { 
-        super(); 
-    } 
-    @Override 
-    public int add(int a, int b) throws RemoteException { 
-        return a + b; 
-    } 
-    @Override 
-    public int sub(int a, int b) throws RemoteException { 
-        return a - b; 
-    } 
-    @Override 
-    public int mul(int a, int b) throws RemoteException { 
-        return a * b; 
-    } 
-    @Override 
-    public int div(int a, int b) throws RemoteException { 
-        return a / b; 
-    } 
-    public static void main(String args[]) { 
-        try { 
-            Registry reg = LocateRegistry.createRegistry(4445); 
-            reg.rebind("server", new server()); 
-            System.out.println("Server is running..."); 
-        } catch (Exception e) { 
-            System.out.println(e); 
-        } 
-    } 
-}
+        for subchild in child:
 
-create java class name it client
-
-CODE: 
-
-import java.rmi.registry.LocateRegistry; 
-import java.rmi.registry.Registry; 
-import java.util.Scanner; 
-public class client { 
-    public static void main(String[] args) { 
-        int result; 
-        double result1; 
-        String decision = "Yes"; 
-        try { 
-            Scanner sc = new Scanner(System.in); 
-            do { 
-                Registry reg = LocateRegistry.getRegistry("localhost", 4445);  
-                adder add = (adder) reg.lookup("server"); 
-                System.out.println("\nCalculator"); 
-              
-                System.out.println("1. Addition"); 
-                System.out.println("2. Subtraction"); 
-                System.out.println("3. Multiplication"); 
-                System.out.println("4. Division"); 
-                System.out.print("Enter your choice: "); 
-                int no = sc.nextInt(); 
-                System.out.print("Enter first number: "); 
-                int a = sc.nextInt(); 
-                System.out.print("Enter second number: "); 
-                int b = sc.nextInt(); 
-                
-                switch (no) { 
-                    case 1: 
-                        result = add.add(a, b); 
-                        System.out.println("Addition = " + result); 
-                        break; 
-                    case 2: 
-                        result = add.sub(a, b); 
-                        System.out.println("Subtraction = " + result); 
-                        break; 
-                    case 3: 
-                        result = add.mul(a, b); 
-                        System.out.println("Multiplication = " + result); 
-                        break; 
-                    case 4: 
-                        if (b == 0) { 
-                            System.out.println("Division by zero not allowed."); 
-                        } else { 
-                            result1 = add.div(a, b); 
-                            System.out.println("Division = " + result1); 
-                        } 
-                        break; 
-                    default: 
-                        System.out.println("Invalid choice."); 
-                } 
- 
-                System.out.print("\nDo you want to calculate again? (Yes/No): "); 
-                decision = sc.next(); 
-            } while (decision.equalsIgnoreCase("Yes")); 
-        } catch (Exception e) { 
-            System.out.println(e); 
-        } 
-    } 
-}  
-
-click on run then click on clean and build project 
-
-right click on server run it and then right click on client  
+            column_name = subchild.tag
 
 
-# practical 3 web services
+            if column_name not in record:
+                record[column_name] = subchild.text
 
-create a new project >> select web application and type calculator
+        all_records.append(record)
 
-right click on calculator >> new >> web service >> name : indi , package : com.in.indi
-
-click on design >> clck on add operation >> add num 1 and num 2 , type = int
-paste the below code and deploy
+    return pd.DataFrame(all_records)
 
 
-@WebService(serviceName = "indi")
-public class indi {
-
-    /**
-     * Web service operation
-     */
-    @WebMethod(operationName = "Addition")
-    
-    
-    public int Addition(@WebParam(name = "num1") int num1, @WebParam(name = "num2") int num2) {
-        //TODO write your implementation code here:
-        int Addition = num1 + num2;
-        return Addition;
-
-    }
-    
-}
-
-# practical 4 mysql 
-
-show databases;
-
-create database mscit;
-
-use mscit;
-
-create table EBOOK ( isbn varchar (100) primary key, bookname varchar (100), bookprice int);
-
-insert into EBOOK values ( '123-456' , 'Cloud-Computing', '790')
-
-netbeans >> web service >> right click on webservice >> new web service >> BookDetails >> package name >> design add operation>> name getBookDetails >> isbn 
+OutputData = func(InputData)
 
 
-package webservice;
-
-import javax.jws.WebMethod;
-import javax.jws.WebParam;
-import javax.jws.WebService;
-import javax.ejb.Stateless;
-import java.sql.*;
-
-@WebService(serviceName = "BookDetails")
-@Stateless()
-public class BookDetails {
-
-    @WebMethod(operationName = "getbookDetails")
-    public String getbookDetails(
-            @WebParam(name = "isbn") String isbn) {
-
-        String bookdetails;
-
-        String url = "jdbc:mysql://localhost:3306/msc_it";
-        String user = "root";
-        String password = "root";
-
-        String query = "SELECT * FROM ebook WHERE isbn = ?";
-
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-
-            try (Connection con = DriverManager.getConnection(
-                        url, user, password);
-                 PreparedStatement stmt = con.prepareStatement(query)) {
-
-                stmt.setString(1, isbn);
-
-                try (ResultSet rs = stmt.executeQuery()) {
-
-                    if (rs.next()) {
-                        bookdetails = "The Name of the Book is "
-                                + rs.getString("bookname")
-                                + " and cost of the book is "
-                                + rs.getString("bookprice");
-                    } else {
-                        bookdetails = "No book found for ISBN: " + isbn;
-                    }
-                }
-            }
-
-        } catch (ClassNotFoundException | SQLException ex) {
-            bookdetails = "Database connection failed: "
-                    + ex.getMessage();
-            ex.printStackTrace();
-        }
-
-        return bookdetails;
-    }
-}
+OutputData.drop(
+    labels=["ISO-2-CODE", "ISO-3-Code"],
+    axis=1,
+    inplace=True,
+    errors="ignore"
+)
 
 
-# practical 8 infrastructure as a service 
+OutputData.rename(
+    columns={
+        "Country": "Country_Name",
+        "ISO-M49": "Country_Number"
+    },
+    inplace=True
+)
 
-#!/bin/bash
-dnf install -y httpd
-systemctl enable httpd
-systemctl start httpd
-echo '<html><h1>Hello From Your Web Server!</h1></html>' > /var/www/html/index.html
+
+OutputData.sort_values(
+    by="Country_Name",
+    ascending=False,
+    inplace=True
+)
+
+print("=================Output_Data================")
+print(OutputData)
+
+
+OutputFile = "XML-HORUS-Country_code.csv"
+
+OutputData.to_csv(OutputFile, index=False)
+
+print("CSV file created successfully!")
+
+----------------------------------------------------------------------------------------------------
+
+
+# Practical 3A  Utilities and Auditing:  Fixers Utilities 
+
+import datetime as dt
+
+print("===============Removing unnecessary spaces=================")
+baddata = "  Data having too many space is bad data  "
+print(f"Bad Data : <{baddata}>")
+gooddata = baddata.strip()
+print(f"Good Data : <{gooddata}>")
+
+print("===========Removing non-printable characters==============")
+baddata = "Data having \x05unwanted funny \x02characters is bad!!!!"
+print(f"Bad Data : <{repr(baddata)}>")
+gooddata = "".join(char for char in baddata if char.isprintable())
+print(f"Good Data : <{gooddata}>")
+
+print("===========Reframing data================") 
+originaldate=dt.date(2026,10,2) 
+baddata=originaldate.strftime("%y-%m-%d") 
+print(f"Bad data : <{baddata}>") 
+gooddata=originaldate.strftime("%d %B %y") 
+print(f"Good Data : <{gooddata}>")
+
+
+------------------------------------------------------------------------------------
+
+# Practical 3B Utilities and Auditing :  Data Binning or Bucketing 
+
+pip install numpy 
+pip install matlplotlib
+
+code:-
+
+import numpy as np 
+import matplotlib.pyplot as plt 
+np.random.seed(42) 
+mean_height, std_dev, data_points= 170,10,1000 
+heights=mean_height+std_dev*np.random.randn(data_points) 
+number_of_bins=15 
+plt.figure(figsize=(10,5)) 
+plt.hist(heights, bins=number_of_bins,color='pink',edgecolor='black') 
+plt.title(f'Histogram of Height of {data_points} People') 
+plt.xlabel('Height (cm)') 
+plt.ylabel('Number of people (Frequency)') 
+plt.tight_layout() 
+plt.show()
+
+
+----------------------------------------------------------------------------------------------
+
