@@ -523,5 +523,19 @@ plt.ylabel("Calories Burned")
 plt.tight_layout() 
 plt.show() 
 
+put in the excel 
+
+UserID	Duration_min	Calories_Burned	Day_of_Week	Activity
+1	30	250	Monday	Running
+2	45	420	Tuesday	Cycling
+3	25	130	Wednesday	Walking
+4	40	350	Thursday	Swimming
+5	38	300	Friday	Running
+6	50	180	Saturday	Yoga
+7	60	500	Sunday	Running
+8	25	110	Monday	Cycling
+9	30	390	Tuesday	Walking
+10	55	480	Friday	Swimming
+
 
 
