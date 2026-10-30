@@ -1,6 +1,10 @@
 https://github.com/Unknownub3201/Practical-Dataset/
 Dataset 
 
+https://drive.google.com/drive/folders/1QTSWzyGkRJFBKkz2U-G6s1ioAo4E-T7p?usp=sharing
+
+-----------------------------------------------------------------------------------------------------------------
+
 #Practical 2A  Conversion from different formats to HOURS format:  Text-Delimited to HORUS. 
 
 code:- 
@@ -174,4 +178,350 @@ plt.show()
 
 
 ----------------------------------------------------------------------------------------------
+
+Practical 4A   Retrieving Data: Program to retrieve different attributes of data 
+
+import pandas as pd 
+
+df = pd.read_csv("IP_DATA_ALL.csv", encoding="latin-1") 
+
+print("Input Data:") 
+print(df.dtypes) 
+
+df.columns = df.columns.str.strip().str.replace(" ", "_") 
+
+print("\nOutput Data:") 
+print(df.dtypes) 
+
+df.index.name = "RowID" 
+print("\nData with ID:") 
+print(df) 
+
+df.to_csv("IP_DATA_ALL_NEW1.csv", index=False)
+
+
+------------------------------------------------------------------------------------------------------
+
+
+Practical 4B    Retrieving Data: Data Pattern
+
+import pandas as pd 
+InputFile = "IP_DATA_ALL.csv" 
+InputData = pd.read_csv(InputFile, low_memory=False, encoding="latin-1", 
+dtype={ 
+"ID": "int", 
+"Country": "str", 
+"Place.Name": "str", 
+"Post.Code": "str", 
+"Latitude": "float", 
+"Longitude": "float", 
+"First.IP.Number": "float", 
+"Last.IP.Number": "float" 
+}) 
+print("---------- Input Data ----------") 
+print(InputData) 
+NewInputData = pd.DataFrame({"Country": InputData["Country"].unique()}) 
+OutputData = pd.DataFrame({ 
+"Country": NewInputData["Country"], 
+"PatternCountry": NewInputData["Country"] 
+}) 
+oldchar = list("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") 
+newchar = ["A"] * len(oldchar) 
+for r in range(OutputData.shape[0]): s = OutputData.loc[r, "PatternCountry"] 
+s = str(s) 
+for c in range(len(oldchar)): s = s.replace(oldchar[c], newchar[c]) 
+for n in range(10): s = s.replace(str(n), "N") 
+s = s.replace("-", "S") 
+s = s.replace(".", "P") 
+OutputData.loc[r, "PatternCountry"] = s 
+print("---------- Output Data ----------") 
+print(OutputData) 
+OutputFile = "IP_DATA_ALL_NEW2.csv" 
+OutputData.to_csv(OutputFile, index=False) 
+
+-----------------------------------------------------------------------------------------------------
+
+Practical 5A  Drop the Columns Where All Elements Are Missing Values
+
+import pandas as pd 
+InputFile="Good-or-Bad.csv" 
+InputData=pd.read_csv(InputFile, encoding = "utf-8") 
+print("--------------InputData----------------") 
+print(InputData) 
+print("No. of Rows:",InputData.shape[0]) 
+print("No. of Columns:",InputData.shape[1]) 
+OutputData=InputData.dropna(axis=0,how="all") 
+print("--------------OutData----------------") 
+print(OutputData) 
+print("No. of Rows:",OutputData.shape[0]) 
+print("No. of Columns:",OutputData.shape[1]) 
+OutputFile="Good-or-Bad-Fixed.csv" 
+OutputData.to_csv(OutputFile, index=False)
+
+
+------------------------------------------------------------------------------------------------
+
+
+Practical 5B  ♦ Drop the columns where Any of the Elements Is Missing Values
+
+import pandas as pd 
+InputFile="Good-or-Bad.csv" 
+InputData=pd.read_csv(InputFile, encoding = "utf-8") 
+print("--------------InputData----------------") 
+print(InputData) 
+print(f"No. of Rows:",{InputData.shape[0]}) 
+print(f"No. of Columns:",{InputData.shape[1]}) 
+OutputData=InputData.dropna(axis=0,how="any") 
+print("--------------OutputData----------------") 
+print(OutputData) 
+print(f"No. of Rows:",{OutputData.shape[0]}) 
+print(f"No. of Columns:",{OutputData.shape[1]}) 
+OutputFile="Good-or-Bad-Fix-5b.csv" 
+OutputData.to_csv(OutputFile, index=False)
+
+----------------------------------------------------------------------------------------------------
+
+
+Practical 5C   Assessing data by dropping the columns where the elements have  missing values based on threshold.
+
+import pandas as pd 
+import numpy as np 
+inputData=pd.DataFrame({ 
+"Name":["Margret","Mathew","Kannan","DhivyaMary"], 
+"SCT":[76,89,56,np.nan], 
+"CC":[np.nan,89,56,90], 
+"DS":[np.nan,45,67,89], 
+}) 
+print("--------InputData----------") 
+print(inputData) 
+print("--------Output data with atleast 2 non null values----------") 
+print(inputData.dropna(axis=0,thresh=2)) 
+print("--------Output data with atleast 3 non null values----------") 
+print(inputData.dropna(axis=0,thresh=3)) 
+print("--------Output data with atleast 4 non null values----------") 
+print(inputData.dropna(axis=0,thresh=4))
+
+------------------------------------------------------------------------------------------------------------
+
+
+Practical 6   Processing Data: Forecasting
+
+import pandas as pd 
+golden_data=pd.DataFrame({ 
+"customer_id":["c001","c002","c003"], 
+"customer_name":["Margret","Mathew","Kannan"], 
+"customer_email":["margretnadar@gmail.com","mathewnadar@gmail.com","kannannadar@gmail.com"]   
+}) 
+print("------------Golden_Data-----------") 
+print(golden_data) 
+nominal_data=pd.DataFrame({ 
+"customer_id":["c001","c002","c003"], 
+"customer_segment":["premium","standard","premium"], 
+"customer_region":["south","west","south"] 
+}) 
+print("--------------Nominal_data--------------") 
+print(nominal_data) 
+process_data=pd.DataFrame({ 
+"customer_id":["c001","c002","c003","c002"], 
+"order_id":["o001","o002","o003","o002"], 
+"order_amount":[450,340,500,1350], 
+"order_date":["12-03-2026","07-04-2026","12-06-2026","24-06-2026"] 
+}) 
+print("-----------Process_data-----------") 
+print(process_data) 
+emp_data=pd.DataFrame({ 
+"emp_id":["e001","e002","e003"], 
+"emp_name":["dhivya","devi","arokia"], 
+"emp_role":["sales","support","manager"] 
+}) 
+print("-------employee_data------------") 
+print(emp_data)
+
+
+-----------------------------------------------------------------------------------------------
+
+Practical 7  Transforming data using simple linear regression
+
+import matplotlib.pyplot as plt 
+from sklearn.datasets import load_diabetes 
+from sklearn.linear_model import LinearRegression 
+from sklearn.metrics import mean_squared_error, r2_score 
+
+data = load_diabetes() 
+x = data.data[:, 2].reshape(-1, 1) 
+y = data.target 
+
+x_train, x_test = x[:-50], x[-50:] 
+y_train, y_test = y[:-50], y[-50:] 
+
+model = LinearRegression() 
+model.fit(x_train, y_train) 
+
+y_pred = model.predict(x_test) 
+
+print("Coefficient:", model.coef_[0]) 
+print("MSE:", mean_squared_error(y_test, y_pred)) 
+print("R2 Score:", r2_score(y_test, y_pred)) 
+
+plt.scatter(x_test, y_test, color="black") 
+plt.plot(x_test, y_pred, color="blue") 
+plt.xlabel("BMI") 
+plt.ylabel("Disease Progression") 
+plt.title("Linear Regression") 
+plt.show()
+
+
+------------------------------------------------------------------------------------------------------------------
+
+Practical 8 A  Organising Data: Horizontal Style
+
+import pandas as pd
+import sqlite3 as sq
+
+DatabaseName1 = "datawarehouse.db"
+Connection1 = sq.connect(DatabaseName1)
+
+DatabaseName2 = "datamart.db"
+Connection2 = sq.connect(DatabaseName2)
+
+
+SQLQuery1 = 'SELECT * FROM "Dim-BMI";'
+InputData = pd.read_sql_query(SQLQuery1, Connection1)
+
+print("------ INPUT DATA --------")
+print(InputData)
+
+
+SQLQuery2 = """
+SELECT personID, Height, Weight, BMI, Indicator
+FROM "Dim-BMI"
+ORDER BY personID;
+"""
+
+ProcessData = pd.read_sql_query(SQLQuery2, Connection1)
+
+print("--------- Horizontal Data ----------")
+print(ProcessData)
+
+
+ProcessData.to_sql(
+    "Dim-BMI-Horizontal",
+    Connection2,
+    if_exists="replace",
+    index=False
+)
+
+
+SQLQuery3 = 'SELECT * FROM "Dim-BMI-Horizontal";'
+OutputData = pd.read_sql_query(SQLQuery3, Connection2)
+
+print("------------ OUTPUT DATA -----------")
+print(OutputData)
+
+Connection1.close()
+Connection2.close()
+
+
+-------------------------------------------------------------------------------------------------------------------
+
+
+Practical 8B  Organising Data: Vertical Style
+
+
+import pandas as pd
+import sqlite3 as sq
+
+databaseName1 = "datawarehouse.db"
+connection1 = sq.connect(databaseName1)
+
+databaseName2 = "datamart.db"
+connection2 = sq.connect(databaseName2)
+
+
+SQLQuery1 = 'SELECT * FROM "Dim-BMI";'
+InputData = pd.read_sql_query(SQLQuery1, connection1)
+
+print("=== Input Data ===")
+print(InputData)
+
+
+SQLQuery2 = """
+SELECT PersonID, Height, Weight, bmi, Indicator
+FROM "Dim-BMI"
+ORDER BY PersonID;
+"""
+
+ProcessData = pd.read_sql_query(SQLQuery2, connection1)
+
+
+VerticalData = pd.melt(
+    ProcessData,
+    id_vars=["PersonID", "Indicator"],
+    value_vars=["Height", "Weight", "bmi"],
+    var_name="Attribute",
+    value_name="Value"
+)
+
+print("============= Vertical Data ==============")
+print(VerticalData)
+
+
+VerticalData.to_sql(
+    "Dim_BMI-Vertical",
+    connection2,
+    if_exists="replace",
+    index=False
+)
+
+
+SQLQuery3 = 'SELECT * FROM "Dim_BMI-Vertical";'
+OutputData = pd.read_sql_query(SQLQuery3, connection2)
+
+print("================ Output Data ================")
+print(OutputData)
+
+connection1.close()
+connection2.close()
+
+
+-------------------------------------------------------------------------------------------------
+
+Practical 9  Generating Reports Data Visualisation with python
+
+import pandas as pd 
+import matplotlib.pyplot as plt 
+df = pd.read_csv("Fitness_Tracker_Data.csv") 
+print(df) 
+df.plot(kind="area", figsize=(10, 5), stacked=False) 
+plt.title("Area Plot of Fitness Metrics") 
+plt.xlabel("Data Entry Index") 
+plt.ylabel("Metric Values") 
+plt.figure(figsize=(10, 5)) 
+plt.scatter(df["Duration_min"], df["Calories_Burned"]) 
+plt.title("Workout duration vs. Calories burned") 
+plt.xlabel("Duration (minutes)") 
+plt.ylabel("Calories Burned") 
+plt.figure(figsize=(10, 5)) 
+columns_to_plot = df.columns.drop(["UserID", "Day_of_Week", "Activity"]) 
+x_data = range(0, df.shape[0]) 
+for column in columns_to_plot: 
+    plt.plot(x_data, df[column], label=column) 
+plt.title("Trend of Fitness Metrics") 
+plt.xlabel("Workout Session Index") 
+plt.ylabel("Value") 
+plt.legend() 
+plt.figure(figsize=(10, 5)) 
+plt.hist(df["Activity"]) 
+plt.title("Frequency of Different Activities") 
+plt.xlabel("Activity Type") 
+plt.ylabel("Frequency (Number of Sessions)") 
+plt.figure(figsize=(10, 5)) 
+plt.bar(df["Day_of_Week"], df["Calories_Burned"]) 
+plt.title("Calories burned by Day of the Week") 
+plt.xlabel("Day of the Week") 
+plt.ylabel("Calories Burned") 
+plt.tight_layout() 
+plt.show() 
+
+
 
